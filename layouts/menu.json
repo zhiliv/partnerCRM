@@ -1,0 +1,48 @@
+[
+  {
+    "name": "Статистика",
+    "href": "/"
+  },
+  {
+    "name": "Организации",
+    "href": "/prod/organizations/page_organizations"
+  },
+  {
+    "name": "Офферы",
+    "href": "/prod/offers/page_offer"
+  },
+  {
+    "name": "Справочники",
+    "dropdown": true,
+    "list": [
+      {
+        "name": "Типы документов",
+        "href": "/guides/type_docs/page_type_docs"
+      },
+      {
+        "name": "Категории",
+        "href": "/guides/categories/page_categories"
+      },
+      {
+        "name": "Партнерские программы",
+        "href": "/guides/cpa/page_cpa"
+      },
+      {
+        "name": "Типы периодов",
+        "href": "/guides/types_period/page_types_period"
+      },
+      {
+        "name": "Способы получения денег",
+        "href": "/guides/method_get_money/page_method_get_money"
+      },
+      {
+        "name": "Типы профитов",
+        "href": "/guides/type_profit/page_type_profit"
+      },
+      {
+        "name": "Сайты",
+        "href": "/guides/sites/page_sites"
+      }
+    ]
+  }
+]
