@@ -1,9 +1,8 @@
 import jwt from 'jsonwebtoken'
 import { db } from '~/server/db'
-import { VerifyJWT } from '~/types/auth'
-import { UserAuth } from '~/types/auth'
-import accessesUsersSchema from '~/schemas/accesses.users.schema'
 import { QueryArrayResult } from 'pg'
+import type { VerifyJWT, User } from '~/types/User'
+import { AuthLogger } from '~/types/Auth'
 // const config = useRuntimeConfig() // получение данных конфигурации
 
 /**
@@ -11,13 +10,8 @@ import { QueryArrayResult } from 'pg'
  * @function getUser
  * @param {Number} id - Идентификатор пользователя
  */
-const getUser = async (id: number | null): Promise<UserAuth | null | any> => {
+const getUser = async (id: number | null): Promise<AuthLogger | null | any> => {
   if(!id) { // Проверка на то что идентификатор передан
-    return null
-  }
-
-  const columns: string[] | null = getColumnFromSchema(accessesUsersSchema) // Получение колонок таблицы
-  if(!columns) {
     return null
   }
 
@@ -25,13 +19,13 @@ const getUser = async (id: number | null): Promise<UserAuth | null | any> => {
     const sql: string = `
       SELECT 
         id,
-        name,
-        password_hash,
+        user,
+        hash_pwd,
         created_date,
-        update_date,
-        email 
-      FROM ${accessesUsersSchema.fullPath} WHERE id=$1 LIMIT 1` // формирование запроса
-    const resultQuery: QueryArrayResult = await db.query(sql, [id]) // выполнение запроса
+        updated_date,
+        email
+      FROM access.users WHERE id=$1 LIMIT 1`
+    const resultQuery: QueryArrayResult = await db.query(sql, [id])
 
 
     if(!resultQuery) {
@@ -41,7 +35,7 @@ const getUser = async (id: number | null): Promise<UserAuth | null | any> => {
       return 'Не найдены данные о пользователе'
     }
 
-    const rows: UserAuth[][] = resultQuery.rows
+    const rows = resultQuery.rows
     const result: any = rows[0]
 
     return result
@@ -54,14 +48,14 @@ const getUser = async (id: number | null): Promise<UserAuth | null | any> => {
 }
 
 
-export default async function (event: any): Promise<UserAuth | null | string> {
+export default async function (event: any): Promise<User | null | string> {
   const { token } = parseCookies(event) // получение токена
   if(!token) throw new Error('Токен отсутствует') // отправка ошибки, если токена нет
 
   const verifyJWT: VerifyJWT | any = jwt.verify(token, 'yOzPacWqItuzr0sg5AVMG7dsIfCaoAj0C6Z6GFt5lrKLLxHWl3jlAfWkGlWhSgFz13i50S2lVYTwB3qC') // получение значения верификации JWT по токену
   const id: number | null = verifyJWT?.id // Получение  идентификатор пользователя
 
-  const user: UserAuth | null = await getUser(id) // Получение данных о пользователе
+  const user: User | null = await getUser(id) // Получение данных о пользователе
   if(!user) {
     return null
   }

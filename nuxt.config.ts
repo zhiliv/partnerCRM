@@ -3,11 +3,11 @@ import path from 'path'
 
 export default defineNuxtConfig({
   devServer: {
-    port: 3000
+    port: 3000,
   },
   sourcemap: {
     server: true,
-    client: true
+    client: true,
   },
 
   ssr: true,
@@ -27,43 +27,57 @@ export default defineNuxtConfig({
     password_admin_start: 'admin',
     sessionOptions: {
       maxAge: 60 * 60 * 12, // время жизни(12 часов)
-      httpOnly: false, // 
+      httpOnly: false, //
       path: '/',
       sameSite: true,
       secure: false, // Позволяет получать куки не только через https
     },
-    notAuth: true // Проверять ли авторизацию
+    notAuth: true, // Проверять ли авторизацию
   },
 
-  css: ["~/assets/css/main.css", "primevue/resources/themes/aura-light-blue/theme.css"],
-
-
+  css: ['~/assets/css/main.css', 'primevue/resources/themes/aura-light-blue/theme.css', 'primeicons/primeicons.css'],
 
   nitro: {
     compressPublicAssets: true,
-    serverAssets: [{
-      baseName: 'img',
-      dir: './public/img'
-    }]
-    ,
+    serverAssets: [
+      {
+        baseName: 'img',
+        dir: './public/img',
+      },
+    ],
     esbuild: {
       options: {
-        target: 'esnext'
-      }
+        target: 'esnext',
+      },
     },
   },
 
-  modules: [
-    '@nuxtjs/tailwindcss',
-    'nuxt-primevue',
-    'nuxt-icons',
-    '@pinia/nuxt',
-    '@nuxt/image'
-  ],
+  modules: ['@nuxtjs/tailwindcss', 'nuxt-primevue', 'nuxt-icons', '@pinia/nuxt', '@nuxt/image'],
   primevue: {
-    cssLayerOrder: "tailwind-base, primevue, tailwind-utilities",
+    cssLayerOrder: 'tailwind-base, primevue, tailwind-utilities',
     components: {
-      exclude: ["Editor", "Chart"]
+      exclude: ['Editor', 'Chart'],
+    },
+    options: {
+      locale: {
+        monthNamesShort: ['Янв', 'Фев', 'Мар', 'Апр', 'Май', 'Июн', 'Июл', 'Авг', 'Сен', 'Окт', 'Ноя', 'Дек'],
+        monthNames: [
+          'Январь',
+          'Февраль',
+          'Март',
+          'Апрель',
+          'Май',
+          'Июнь',
+          'Июль',
+          'Август',
+          'Сентябрь',
+          'Октябрь',
+          'Ноябрь',
+          'Декабрь',
+        ],
+        dayNamesdayNames: ['Воскресенье', 'Понедельник', 'Вторник', 'Среда', 'Четверг', 'Пятница', 'Суббота'],
+        dayNamesMin: ['Вс', 'Пн', 'Вт', 'Ср', 'Чт', 'Пт', 'Сб'],
+      },
     },
   },
 
@@ -71,18 +85,15 @@ export default defineNuxtConfig({
     // typeCheck: true,
     tsConfig: {
       compilerOptions: {
-        verbatimModuleSyntax: false
-      }
-    }
+        verbatimModuleSyntax: false,
+      },
+    },
   },
-
-
 
   postcss: {
     plugins: {
       tailwindcss: {},
       autoprefixer: {},
     },
-  }
-
-})
+  },
+});

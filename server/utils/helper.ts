@@ -1,137 +1,103 @@
-import { db } from '~/server/db'
-import { Response } from '~/types/query'
-import fs from 'fs'
-import { SchemaDB } from '~/types/SchemaDB'
+/**
+ ** Установка лимитов для запросов
+ * @function setLimit
+ * @param {Number} limit - Лимит
+ * @param {Number} offset - Смещение
+ */
+export const getLimit = (limit: number, offset: number) => {
+  return ` 
+    LIMIT ${limit} 
+    OFFSET ${offset}
+  `
+}
 
-/** 
-** Удаление свойства из объекта
-* @function removeObjectProperty
-* @param {Object} obj - Объект для удаления свойства
-* @param {String} name - Имя свойства для удаления
-*/
-export const removeObjectProperty = (obj: object, name: string): object => {
-  let newObj:any = { ...obj };
-  delete newObj[name];
-  return newObj;
+/**
+ ** Установка сортировки
+ * @function setSort
+ * @param {Object} sort - Параметры сортировки
+ * @return {String}
+ */
+export const getSort = (sort: any) => {
+  const sorted = JSON.parse(sort)
+  const asc: string[] = [] // Массив полей в восходящем порядке(от меньшего к большему)
+  const desc: string[] = [] // Массив полей для сортировки в нисходящем порядке(от большего к меньшему)
+
+  const keys = Object.keys(sorted) // Получение ключей сортировки
+
+  keys.forEach((key: string) => {
+    if(sorted[key]) {
+      if(sorted[key] === 'asc') asc.push(key)
+      if(sorted[key] === 'desc') desc.push(key)
+    }
+  })
+
+  const result = ` 
+    ORDER BY `
+
+  const stringASC = asc.length > 0 ? ` ${asc.join(', ')} ASC` : ''
+  const stringDESC = desc.length > 0 ? ` ${desc.join(', ')} DESC` : ''
+  return stringASC || stringDESC ? `${result} 
+    ${stringASC.length && stringDESC.length ? `${stringASC}, ${stringDESC}` : stringASC || stringDESC}` : ''
 }
 
 /** 
-** Получение колонок из схемы
-* @function getColumnFromSchema
-* @param {Object} obj- Схема для получения колонок
+** Установка фильтров
+* @function getFilter
+* @param {Object} filter - Параметры фильтрации
 */
-export const getColumnFromSchema = (schema: SchemaDB): string[] | null => {
-  if(!schema){
-    return null
-  } 
-  const keys = Object.keys(schema.columns)
-  const columns = keys.map((key: any) => `${schema.table}.${key} as ${schema.short}_${key}`)
-  keys.forEach((col:object | object[]) => {
-    if(schema.columns[col].type === 'JSONB'){
-      schema.columns[col].columns.forEach((el:any) => {
-        
-      })
-    }
-  })
+export const getFilter = (filter: any) => {
   
-  return columns
-}
+  const keys = Object.keys(filter) // Получение фильтров
+  let result = keys.length && Object.values(filter).filter((val: any) => val && val.value).length ? ' WHERE ' : ' '
 
+  keys.forEach((key: string, index: number) => {
+    if(filter[key] && filter[key].filter && filter[key].value && filter[key].type !== 'date') {
+      let condition = ''
+      switch(filter[key].filter) {
+        case '=':
+          condition = '='
+          break;
+        case '!=':
+          condition = '<>'
+          break
+        case 'like':
+          condition = ' LIKE '
+          break
+        case 'not like':
+          condition = ' NOT LIKE '
+          break
+        case '>':
+          condition = ' > '
+          break
+        case '<':
+          condition = ' < '
+          break
+        default:
+          condition = ' = '
+          break;
+      } // Получение условия фильтрации
 
-/** 
-** Сохранение изображения
-* @function saveImage
-* @param {String} table - Наименование таблицы
-* @param {Number} id - Идентификатор
-* @param {String} fileName - Имя файла
-* @param {String} file - Данные файла
-*/
-export const saveImage = async (table: string, id: number, fileName: string | null, file: string) => {
-  const base64Data = file.replace(/^data:([A-Za-z-+/]+);base64,/, '') // Данные файла
-  if(!fs.existsSync(`./public/img/${table}/${id}`))  // Проверка существования директории 
-    await fs.mkdirSync(`./public/img/${table}/${id}`)  // Создание директории
-  await fs.writeFileSync(`./public/img/${table}/${id}/${fileName}`, base64Data, 'base64') // Запись данных в файл
-  return { fileName, id }
-}
-
-/** 
-** Удаление изображения
-* @function delImage
-* @param {String} path - путь к файлу 
-*/
-export const delImage = async (path: string | undefined) => {
-  try {
-    const checkFile = await fs.statSync(`./public/${path}`).isFile() // Проверка наличия файла
-    if(checkFile) {
-      await fs.unlinkSync(`./public/${path}`) // Удаление файла
-      return true
-    }
-  }
-  catch(err) {
-    return 'Файл отсутствует'
-  }
-}
-
-/** 
-** Получение параметров для sql запроса
-* @function getWhereSql
-*/
-export const getWhereSql = (params: any) => {
-  if(!params) {
-    return null
-  }
-
-  let result = ' WHERE ' // Результат формирования условия 
-  const keys = Object.keys(params) // Получение ключей параметров 
-  keys.forEach((key: any, index: number) => {
-    let condition = ''
-    
-    switch(params[key].type) {
-      case '=':
-        condition = ' = '
-        break
-      case '>':
-        condition = ' > '
-        break
-      case '>=':
-        condition = ' >= '
-        break
-      case '<':
-        condition = ' < '
-        break
-      case '<=':
-        condition = ' <= '
-        break
-      case '%':
-        condition = ' LIKE '
-        break
-      default:
-        condition = ' = '
-    }
-    
-    let isJson = false
-    if(key.substring(0, 2) === 'o_') {
-      isJson = key.split('_')[1]
-    }
-
-
-    if(isJson === false) {
-      if(index === 0) {
-        result += `  ${key} ${condition} '${condition === ' iLIKE ' ? '%' : ""}${params[key].value}${condition === ' iLIKE ' ? '%' : ""}' `
+      let value = ''
+      if(filter[key].filter === 'like' || filter[key].filter === 'not like') value = `%${filter[key].value}%`
+      else value = filter[key].value // Получение значение фильтра
+      
+      if(filter[key].type === 'string'){
+        if(result === ' WHERE ') result += ` LOWER(${key}) ${condition} '${value}' `
+        else result += ` AND LOWER(${key}) ${condition} '${value}'  `  
       }
-      else result += ` AND ${key} ${condition} '${condition === ' iLIKE ' ? '%' : ""}${params[key].value}${condition === ' iLIKE ' ? '%' : ""}' `
-    }
-    else {
-      let newKey = key.split('_').slice(2).join('_')
-      if(index === 0) {
-        result += ` WHERE ${isJson} ->> '${newKey}' ${condition} '${condition === ' iLIKE ' ? '%' : ""}${params[key].value}${condition === ' iLIKE ' ? '%' : ""}' `
+      
+      if(filter[key].type === 'number') {
+        if(result === ' WHERE ') result += ` ${key} ${condition} ${value} `
+        else result += ` AND ${key} ${condition} ${value}  `
       }
-      else result += ` AND ${isJson} ->> '${newKey}' ${condition} '${condition === ' iLIKE ' ? '%' : ""}${params[key].value}${condition === ' iLIKE ' ? '%' : ""}' `
-
-      // where information  ->> 'site' = '1'
-    } 
+      
+    }
+    else if(filter[key] && filter[key].filter && filter[key].value && filter[key].type === 'date'){
+      if(result === ' WHERE '){
+        result += ` ${key} BETWEEN  '${filter[key].value[0]}' AND '${filter[key].value[1]}' `
+      }
+      else result += ` AND ${key}  BETWEEN  '${filter[key].value[0]}' AND '${filter[key].value[1]}' `
+    }
   })
-
-
-return result
+  return result
 }

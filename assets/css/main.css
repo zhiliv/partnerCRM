@@ -1,3 +1,4 @@
+import 'primeicons/primeicons.css'
 
 :root {
   --primary-50: 236 253 245;
@@ -140,3 +141,4 @@ h6,
   max-height: 48px !important;
 
 }
+

@@ -15,8 +15,10 @@
 </template>
 
 <script lang="ts" setup>
-const list: any = ref([]) // Список уведомлений
-const ind = ref(0) // Индекс уведомления
+
+import type {Toast} from '~/types/Toast'
+const list = ref<Toast[]>([]) // Список уведомлений
+const ind = ref<number>(0) // Индекс уведомления
 
 /** Отслеживание события для отображения уведомлений */
 emitter.on('show-toast', (event: any) => {
@@ -31,4 +33,5 @@ emitter.on('remove-toast', (event: any) => {
   const index = list.value.findIndex((el: any) => el.id === event.id) // Получение индекса сообщения
   list.value.splice(index, 1) // Удаление элемента из массива
 })
+
 </script>

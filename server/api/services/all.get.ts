@@ -1,13 +1,13 @@
-import { H3Event } from 'h3'
-import { QueryArrayResult } from 'pg'
+import type { H3Event } from 'h3'
+import type { Service } from '~/types/Service'
+import type { QueryArrayResult } from 'pg'
+import type {ParamsQuery} from '~/types/ParamsQuery'
 import { db } from '~/server/db'
-import { SchemaDB } from '~/types/SchemaDB'
-import servicesSchema from '~/schemas/bases.services.schema'
+import { getFilter } from '~/server/utils/helper'
 
 
 export default defineEventHandler(async (event: H3Event) => {
-  const params: object = getQuery(event) // Получение параметров запроса
-  const columns: string[] | null = getColumnFromSchema(<SchemaDB>servicesSchema) // Получение колонок таблицы 
+  const params: ParamsQuery = await getQuery(event) // Получение параметров запроса
   const response = {
     statusCode: 200,
     message: 'Список сервисов получен успешно',
@@ -16,13 +16,16 @@ export default defineEventHandler(async (event: H3Event) => {
 
   const sql = `
     SELECT
-      ${columns?.toString()}
+      id,
+      name,
+      created_date,
+      updated_date
     FROM 
-      ${servicesSchema.fullPath} 
-    ORDER BY created_date DESC
-    LIMIT 100
+      base.services
+      ${getFilter(JSON.parse(params.filter))}
+      ${Object.keys(JSON.parse(params.sort)).length > 0 ? getSort(params.sort) : ' ORDER BY id DESC '}
+    LIMIT ${params.limit} OFFSET ${params.offset}
     `
-
 
   try {
     const result: QueryArrayResult = await db.query(sql) // Выполнение запроса  
@@ -31,7 +34,7 @@ export default defineEventHandler(async (event: H3Event) => {
       response.message = `Непредвиденная ошибка получения списка сервисов`
     }
 
-    const rows: any[] = result.rows
+    const rows: Service[][] = result.rows
     response.data = rows
   }
   catch(err: any) {

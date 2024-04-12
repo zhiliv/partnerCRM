@@ -10,49 +10,15 @@
 </template>
 
 <script lang="ts" setup>
-/**
- * @type Props
- * @param {Number} id - Идентификатор уведомления
- * @param {String} title - Заголовок
- * @param {String} message - Сообщения уведомления
- * @param {Number} timer - Таймер закрытия окна
- * @param {String} type - Тип уведомления
- */
-type Props = {
-  id: number
-  title: string
-  message: string
-  timer: number
-  type: 'info' | 'success' | 'warning' | 'error'
-}
+import type {Toast} from '~/types/Toast'
 
 /** Установка значения по умолчанию для входных свойств */
-const props = withDefaults(defineProps<Props>(), {
+const props = withDefaults(defineProps<Toast>(), {
   id: 0,
   title: '',
   message: '',
   timer: 15000,
   type: 'info',
-})
-
-/* Вычисление класса для уведомления */
-const alertClass = computed(() => {
-  return `alert-${props.type}`
-})
-
-/* Вычисление заголовка */
-const getTile = computed(() => {
-  if(props.title) return props.title
-  switch(props.type) {
-    case 'info':
-      return 'Информация'
-    case 'success':
-      return 'Успех'
-    case 'warning':
-      return 'Внимание'
-    case 'error':
-      return 'Ошибка'
-  }
 })
 
 /* Установка таймаута удаления сообщения */
@@ -62,6 +28,7 @@ setTimeout(() => {
 
 /**
  ** Событие при нажатии на закрытие уведомления
+ * @async
  * @function onClose
  */
 const onClose = async () => {

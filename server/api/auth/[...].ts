@@ -1,17 +1,16 @@
 import { db } from '~/server/db'
+import color from 'ansis'
 import * as bcrypt from 'bcrypt' // модуль криптографии
 import jwt from 'jsonwebtoken'
-import { EnterAuthData, LoggerAuth, UserAuth } from '~/types/auth'
-import { DateNow } from '~/server/utils/time'
 import moment from 'moment-timezone'
-import { Response } from '~/types/query'
-import accessesUsersSchema from '~/schemas/accesses.users.schema'
-import  authLoggerSchema  from '~/schemas/accesses.auth_logger.schema'
-import { getColumnFromSchema, removeObjectProperty } from '~/server/utils/helper'
-import { QueryArrayResult, QueryResult } from 'pg'
+import type { QueryArrayResult, QueryResult } from 'pg'
+import type { User } from '~/types/User'
+import type { RequestAuth, GetUser, AuthLogger, CheckCountAuth, Count } from '~/types/Auth'
+import type { H3Event } from 'h3'
+import type { ResponseHTTP } from '~/types/ResponseHTTP'
+import type { TimeStamp } from '~/types/Time'
+
 const config = useRuntimeConfig() // получение данных конфигурации
-
-
 
 /** 
 ** Получение пользователя из БД
@@ -19,152 +18,253 @@ const config = useRuntimeConfig() // получение данных конфи�
 * @param {Object} params - Объект с параметром, содержащим свойство login
 * @return {Object} - Данные о пользователе
 */
-const getUser = async (params: EnterAuthData): Promise<UserAuth | null> => {
-  const { login } = params // Получение имени пользователя
-  if(!login || /[^\w\s]/.test(login)) { // Проверка на наличие небезопасных символов
-    return null
+const getUser = async (params: RequestAuth): Promise<GetUser> => {
+  const result: GetUser = {
+    data: null,
+    error: null
   }
 
-  try {
-    
+  if(!params) {
+    result.error = 'Параметр отсутствует'
+    return result
+  }
 
+  const { login } = params // Получение имени пользователя
+  if(!login || /[^\w\s]/.test(login)) { // Проверка на наличие небезопасных символов
+    result.error = 'Недопустимые символы в логине'
+    return result
+  }
+
+
+  try {
     const sql: string = `
       SELECT 
         id, 
         name, 
-        password_hash,
+        hash_pwd,
         created_date,
-        update_date,
+        updated_date,
         email
       FROM  
-        ${accessesUsersSchema.fullPath}  
+        access.users
       WHERE name=$1 LIMIT 1` // Использование параметризованного запроса
-    const result: QueryArrayResult = await db.query(sql, [login]) // Передача параметра в запрос
+    const resUser: QueryResult = await db.query(sql, [login]) // Передача параметра в запрос
 
-    if(result && result.rows && result.rows.length) { // Проверка полученного результата
-      const res: any = result.rows[0]
-      return res
+    if(!resUser) {
+      result.error = 'Не удалось получить пользователя'
+      return result
     }
 
-    if(!result) {
-      return null
+    if(resUser && resUser.rows && resUser.rows.length) { // Проверка полученного результата
+      const user: User = resUser.rows[0]
+      result.data = user
+      return result
     }
-  } catch(error) {
-    console.error('Ошибка выполнения запроса:', error) // Обработка ошибки
-    return null
+    else {
+      result.error = `Пользователь ${login} не найден`
+    }
+  } catch(err: any) {
+    result.error = 'Ошибка выполнения запроса:', err
+    console.error(color.red('Ошибка выполнения запроса:'), color.green(err)) // Обработка ошибки
+    return result
   }
-  return null
+  return result
 }
 
 
+export default defineEventHandler(async (event: H3Event) => {
+  const response: ResponseHTTP = {
+    statusCode: 400, // установка статуса ответа
+    message: 'Ошибка авторизации'
+  }
 
-export default defineEventHandler(async event => {
   if(!event) {
-    return null
+    response.message = 'Ошибка при получении данных события при проверке количества попыток авторизации'
+    return createError(response)
   }
 
   await deleteCookie(event, 'token') // Удаление куки
-  const params: EnterAuthData = await readBody(event) // Получение параметров запроса
-
-  const response: Response = {
-    status: 400, // установка статуса ответа
-    message: ''
+  const params: RequestAuth = await readBody(event) // Получение параметров запроса
+  if(!params) {
+    response.message = 'Отсутствуют параметры логина и пароля'
+    return createError(response)
   }
 
-  const dataAuth: LoggerAuth = {
-    // объект данных авторизации
-    user_id: null, // Идентификатор пользователя
-    date_request: DateNow(), // установка даты запроса
-    date_auth: null, // установка даты авторизации
-    status: false,// установка статуса
-    token: null, // установка токена
+  if(!params.login || !params.password) {
+    response.message = 'Отсутствуют параметры логина или пароля'
+    return createError(response)
   }
+
+  const authData: AuthLogger = {
+    user_id: null,
+    date_auth: null,
+    status: null,
+    token: null,
+    comment: null
+  } // Данные для добавления в таблицу "access.auth_logger"
+
 
   if(params.login.length < 4 || params.password.length < 5) { // проверка длины логина или пароля
-    response.status = 200
+    response.statusCode = 401
     response.message = 'Не валидный логин или пароль'
     return createError(response)
   }
 
-  const user: UserAuth | null = await getUser(params)
+  const userData: GetUser = await getUser(params) // получение пользователя
+  if(!userData) { // Проверка на то что данные от пользователя получены
+    response.statusCode = 400
+    response.message = 'Ошибка при получении пользователя'
+    return createError(response)
+  }
+
+  if(userData.error) {
+    response.statusCode = 400
+    response.message = userData.error
+    console.error(`Ошибка при получении пользователя: ${userData.error}`)
+  }
+
+  const user: User | null | undefined = userData.data // Данные пользователя
   if(!user) { // Проверка на то что данные от пользователя получены
-    return null
+    response.statusCode = 400
+    response.message = 'Ошибка при получении пользователя'
+    return createError(response)
   }
 
   if(!user.id) { // Проверка на то что найден идентификатор пользователя
-    response.status = 401
+    response.statusCode = 400
     response.message = 'Неверный логин или пароль'
     return createError(response)
   }
 
-  const countAuth = await checkCountAuth(user?.id) // Получение количества подключений
-  if(countAuth > 100) { // Если количество попыток превышает 100 то возвращаем ответ о превышении лимита попыток входа
-    dataAuth.user_id = user?.id
-    response.status = 401
+  const countAuth: CheckCountAuth = await checkCountAuth(user?.id) // Получение количества подключений
+  if(countAuth.error) {
+    response.statusCode = 400
+    response.message = countAuth.error
+    console.error(`Ошибка при проверке количества попыток: ${countAuth.error}`)
+  }
+
+  if(countAuth.count === null || countAuth.count === undefined) {
+    response.statusCode = 400
+    response.message = 'Ошибка безопасности авторизации'
+    return createError(response)
+  }
+
+  if(countAuth.count !== null || countAuth.count !== undefined) {
+    authData.user_id = user?.id
+    authData.date_auth = moment().format('YYYY-MM-DD HH:mm:ss')
+    authData.status = false
+  }
+
+  if(countAuth.count >= 11) { // Если количество попыток превышает 100 то возвращаем ответ о превышении лимита попыток входа
+    authData.comment = 'Превышено количество запросов авторизации'
+    response.statusCode = 400
     response.message = 'Превышено количество запросов авторизации. Доступ к авторизации будет доступен в течении 5 минут'
-    await logger(dataAuth)
+    logger(authData) // логирование
     return createError(response)
   }
 
   let token // переменная для хранения токена
-  const checkHash = user?.id ? await bcrypt.compare(params.password, user.password_hash) : null // проверка пароля по хэшу
-  if(user && user.id && countAuth <= 100 && checkHash) {
-    token = jwt.sign({ id: user.id }, 'yOzPacWqItuzr0sg5AVMG7dsIfCaoAj0C6Z6GFt5lrKLLxHWl3jlAfWkGlWhSgFz13i50S2lVYTwB3qC', { expiresIn: '1d' })
-    response.status = 200 // установка статуса
-    dataAuth.user_id = user.id // установка идентификатора пользователя
-    dataAuth.date_auth = DateNow() // установка даты авторизации
-    dataAuth.token = token // Установка токена
+  const checkHash = user?.id ? await bcrypt.compare(params.password, user.hash_pwd) : null // проверка пароля по хэшу
+  if(user && user.id && countAuth.count <= 11 && checkHash) {
+    token = jwt.sign({ id: user.id }, config.secret_key, { expiresIn: '1d' })
+    response.statusCode = 200 // установка статуса
+    authData.date_auth = moment().format('YYYY-MM-DD HH:mm:ss') // установка даты авторизации
+    authData.token = token // Установка токена
+    authData.status = true
     setCookie(event, 'token', token, config.sessionOptions) // Установка в куки токена
-    setCookie(event, 'user', user.name, config.sessionOptions) // Установка в куки имени пользователя
+    setCookie(event, 'user', user.user, config.sessionOptions) // Установка в куки имени пользователя
     setCookie(event, 'user_id', String(user.id), config.sessionOptions) // Установка в куки идентификатор пользователя
-    logger(dataAuth) // логирование
-    return response
   }
   else {
-    dataAuth.user_id = user.id
-    response.status = 400 // установка статуса
+    authData.id = user.id
+    authData.status = false
+    authData.comment = 'Неверный логин или пароль'
+    response.statusCode = 400 // установка статуса
     response.message = 'Неверный логин или пароль'
-    logger(dataAuth) // логирование
-    return response
   }
+  logger(authData) // логирование
+  return response
 })
 
 
 
-/*
- * Добавление записи в таблицу логера авторизации
+/**
+ ** Добавление записи в таблицу логера авторизации
  * @function logger
- * @param {Object} authData - Данные для записи
+ * @param {Object} data - Данные для записи
  */
-const logger = async (authData: LoggerAuth) => {
-  const columnsSchema: object = removeObjectProperty(authLoggerSchema.columns, 'id') // Получение списка колонок без идентификатора
-  const columns: string[] = Object.keys(columnsSchema) // Получение списка колонок для запроса
-  const sql: string = `INSERT INTO accesses.auth_logger (${columns.toString()}) VALUES($1, $2, $3, $4, $5)`
-  const response: QueryResult = await db.query(sql, Object.values(authData))
+const logger = async (data: AuthLogger): Promise<T> => {
+  try {
+    const sql: string = `
+    INSERT INTO 
+      access.auth_logger 
+    (user_id, date_auth, status, token, comment)
+    VALUES($1, $2, $3, $4, $5)`
+
+    await db.query(sql, Object.values(data))
+  }
+  catch(err: any) {
+    console.error('Ошибка при добавлении данных в таблицу логера авторизации(access.auth_logger)', err)
+  }
 }
 
 
 
-/* 
-* Проверка количества запросов авторизации по логину
+/** 
+** Проверка количества запросов авторизации по логину
 * @function checkCountAuth
 * @param {String} login - login адрес клиента
 * @return {Number} - Количество записей
 */
-const checkCountAuth = async (user_id: number) => {
-  if(user_id) {
-    const dateTimeStart: string = moment().tz("Europe/Moscow").subtract(5, 'minutes').format('YYYY-MM-DD HH:mm:ss') // получение даты минус 5 минут
-    const dateTimeEnd: string = moment().tz("Europe/Moscow").format('YYYY-MM-DD HH:mm:ss') // Текущая дата  и время 
+const checkCountAuth = async (user_id: number): Promise<CheckCountAuth> => {
+  const result: CheckCountAuth = {
+    error: null,
+    count: null
+  } // Результат выполнения функции
 
-    const sql: string = `SELECT COUNT(*) FROM ${authLoggerSchema.fullPath} WHERE date_request BETWEEN '${dateTimeStart}' AND '${dateTimeEnd}'`
-    const response: QueryArrayResult = await db.query(sql) // Выполнение запроса
-    
-    if(!response?.rows.length) return false
-    const obj_result: any = response.rows[0] // Получение первого элемента 
-    if(!obj_result) return false
-    
-    const result = obj_result.count// Получение значения свойства 
+  const dateTimeStart: TimeStamp =
+    moment()
+      .tz("Europe/Moscow")
+      .subtract(5, 'minutes')
+      .format('YYYY-MM-DD HH:mm:ss') // получение даты минус 5 минут
+
+  const dateTimeEnd: TimeStamp = moment()
+    .tz("Europe/Moscow")
+    .format('YYYY-MM-DD HH:mm:ss') // Текущая дата  и время 
+
+  if(user_id) {
+    try {
+      const sql: string =
+        `
+        SELECT 
+          COUNT(*) 
+        FROM 
+          access.auth_logger
+        WHERE 
+          created_date 
+          BETWEEN '${dateTimeStart}' AND '${dateTimeEnd}'`
+      const response: QueryResult = await db.query(sql) // Выполнение запроса
+      if(!response) {
+        result.error = 'Ошибка при выполнении запроса'
+        return result
+      }
+
+      const resultCount: Count = response.rows[0] // Получение первого элемента 
+      if(!resultCount) {
+        result.error = 'Не удалось получить количество запросов авторизации'
+        return result
+      }
+
+      result.count = resultCount.count
+    }
+    catch(err: any) {
+      result.error = err
+      return result
+    }
+  }
+  else {
+    result.error = 'Не передан идентификатор пользователя'
     return result
   }
-  else return false
+  return result
 }

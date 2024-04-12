@@ -1,13 +1,12 @@
-import { H3Event } from 'h3'
-import { QueryArrayResult, QueryResult } from 'pg'
+import type { H3Event } from 'h3'
+import type { QueryArrayResult, QueryResult } from 'pg'
+import type { ParamsGetServices } from '~/types/Service'
 import { db } from '~/server/db'
-import { SchemaDB } from '~/types/SchemaDB'
-import servicesSchema from '~/schemas/bases.services.schema'
+import { getFilter, getSort, getLimit } from '~/server/utils/helper'
 
 
 export default defineEventHandler(async (event: H3Event) => {
-  const params: object = getQuery(event) // Получение параметров запроса
-  const columns: string[] | null = getColumnFromSchema(<SchemaDB>servicesSchema) // Получение колонок таблицы 
+  const params: ParamsGetServices = getQuery(event) // Получение параметров запроса
   const response = {
     statusCode: 200,
     message: 'Список сервисов получен успешно',
@@ -18,8 +17,10 @@ export default defineEventHandler(async (event: H3Event) => {
     SELECT
       COUNT(*) as count
     FROM 
-      ${servicesSchema.fullPath}
+      base.services
+      ${params.limit && params.offset ? getLimit(params.limit, params.offset) : ''}
     `
+
 
 
   try {

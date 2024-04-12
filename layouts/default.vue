@@ -5,11 +5,6 @@
         <template #start>
           <!-- Пользователь -->
         </template>
-        <template #item="{ item }">
-          <li :class="{ 'active': item.id === activeItem }">
-            <a :href="item.href">{{ item.label }}</a>
-          </li>
-        </template>
       </MegaMenu>
       <nuxtPage />
     </div>
@@ -17,15 +12,30 @@
   <app-toast />
 </template>
 <script lang="ts" setup>
-const items = ref([
+import type { Item } from '~/types/Menu'
+import type { RouteLocationNormalizedLoaded } from 'vue-router'
+const route: RouteLocationNormalizedLoaded = useRoute() // Получение значения роута
+
+const items: Ref<Item[]> = ref([
   {
-    label: 'Сервисы', icon: 'pi pi-fw pi-video', url: '/services'
+    label: 'Статистика', icon: 'pi pi-fw pi-video', url: '/',
   },
   {
-    label: 'Сервисы1', icon: 'pi pi-fw pi-video', url: '/services'
+    label: 'Сервисы', icon: 'pi pi-fw pi-video', url: '/services',
+  },
+  {
+    label: 'Сервисы1', icon: 'pi pi-fw pi-video', url: '/services1'
   }
-])
-const activeItem = ref()
+]) // Список меню
+
+onMounted(() => {
+  /** Установка класса активной ссылки */
+  items.value.forEach((el: Item, index: number) => {
+    if(el.url === route.path) {
+      items.value[index].class = 'p-menuitem-active'
+    }
+  })
+})
 </script>
 
 <style>
@@ -35,34 +45,38 @@ const activeItem = ref()
   }
 }
 
-.p-menuitem{
+.p-menuitem {
   min-height: 40px;
   display: flex;
   width: 100%;
   align-items: center;
-  
+
 }
 
-.p-menuitem-active{
-  height: 100%;
+.p-menuitem-active {
+  background: var(--green-400);
+  border-radius: 6px;
 }
 
-.p-menuitem-content{
+.p-menuitem-content {
   width: 100%;
   height: 100%;
   margin: 0px;
   padding: 0px;
 }
 
-.p-menuitem-link{
+.p-menuitem-link {
   width: 100%;
   height: 40px;
   margin: 4px;
-
 }
 
-.p-menuitem-link:hover{
-  background: red
+.p-menuitem-content:hover {
+  background: var(--green-500);
+  border-radius: 6px;
 }
 
-</style>
+.p-menuitem-link:hover .p-menuitem-text {
+  color: white !important;
+}
+</style>~/types/Menu

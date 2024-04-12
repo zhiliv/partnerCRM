@@ -1,12 +1,11 @@
-import { H3Event } from 'h3'
+import type { H3Event } from 'h3'
+import type { ResponseHTTP } from '~/types/ResponseHTTP'
 import { db } from '~/server/db'
 import { QueryResult } from 'pg'
-import { SchemaDB } from '~/types/SchemaDB'
-import servicesSchema from '~/schemas/bases.services.schema'
 
 export default defineEventHandler(async (event: H3Event) => {
   const params = await readBody(event) // Параметры запроса
-  const response = {
+  const response: ResponseHTTP = {
     statusCode: 200,
     message: 'Запись добавлена успешно',
     data: null
@@ -18,7 +17,7 @@ export default defineEventHandler(async (event: H3Event) => {
     throw createError(response)
   }
 
-  const sql: string = `INSERT INTO bases.services(name) VALUES($1) RETURNING *`
+  const sql: string = `INSERT INTO base.services(name) VALUES($1) RETURNING *`
   const result: QueryResult = await db.query(sql, Object.values(params))
   
   if(!result) {
