@@ -1,21 +1,21 @@
 import type { H3Event } from 'h3'
 import type { ResponseHTTP } from '~/types/ResponseHTTP'
-import type {Service} from '~/types/Service'
+import type { Group } from '~/types/Group'
 import { db } from '~/server/db'
 import { QueryArrayResult, QueryResult } from 'pg'
 
 export default defineEventHandler(async (event: H3Event) => {
-  const params:Service = await getQuery(event) // Получение параметров запроса
+  const params: Group = await getQuery(event) // Получение параметров запроса
   
   const response: ResponseHTTP = {
     statusCode: 200,
-    message: 'Сервис получен успешно',
+    message: 'Группа получена успешно',
     data: null
   } // Параметры ответа
   
   if(!params || !params.id){
     response.statusCode = 500
-    response.message = 'Не передан идентификатор сервиса'
+    response.message = 'Не передан идентификатор Группы'
     throw createError(response)
   }
   
@@ -25,7 +25,7 @@ export default defineEventHandler(async (event: H3Event) => {
       name,
       created_date,
       updated_date
-    FROM base.services 
+    FROM base.groups 
     WHERE id = $1 
     `
     
@@ -33,11 +33,11 @@ export default defineEventHandler(async (event: H3Event) => {
       const result: QueryArrayResult = await db.query(sql, [params.id])
       if(!result) {
         response.statusCode = 500
-        response.message = 'Непредвиденная ошибка при получении сервиса'
+        response.message = 'Непредвиденная ошибка при получении Группы'
         throw createError(response)
       }
       
-      const rows: Service[][] = result.rows // Получение строк ответа
+      const rows: Group[][] = result.rows // Получение строк ответа
       response.data = rows[0]
     }
     catch(err: any){

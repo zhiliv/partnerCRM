@@ -4,11 +4,11 @@ import type { Filter, Sort } from './Filter'
 /**
  * @interface Service
  * @member {Number} id - Идентификатор
- * @member {String} name - Наименование сервиса
+ * @member {String} name - Наименование Группы
  * @member {String} created_date - Дата создания в формате timezone
  * @member {String} update_date - Дата обновления записи в формате timezone
  */
-export interface Service {
+export interface Group {
   id?: number
   created_date?: TimeStamp
   update_dated?: TimeStamp
@@ -17,12 +17,12 @@ export interface Service {
 
 /**
  ** Описание интерфейса фильтров
- * @interface FilterService
+ * @interface FilterGroup
  * @member {Number} id - Идентификатор
- * @member {String} name - Наименование сервиса
+ * @member {String} name - Наименование Группы
  * @member {String} created_date - Дата создани
  */
-export interface FilterService {
+export interface FilterGroup {
   id?: Filter | null
   name?: Filter | null
   created_date?: Filter | null
@@ -31,12 +31,12 @@ export interface FilterService {
 
 /**
  ** Описание интерфейса фильтров
- * @interface FilterService
+ * @interface SortGroup
  * @member {Number} id - Идентификатор
- * @member {String} name - Наименование сервиса
+ * @member {String} name - Наименование Группы
  * @member {String} created_date - Дата создани
  */
-export interface SortService {
+export interface SortGroup {
   id?: Sort | null
   name?: Sort | null
   created_date?: Sort | null
@@ -46,7 +46,7 @@ export interface SortService {
 ** Описание интерфейса параметров запроса для получения списка
 * @interface ParamsGetServices
 */
-export interface ParamsGetServices {
+export interface ParamsGetGroups {
   limit?: number
   offset?: number
   order?: string

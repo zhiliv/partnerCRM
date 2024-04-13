@@ -18,13 +18,13 @@ const route: RouteLocationNormalizedLoaded = useRoute() // Получение з
 
 const items: Ref<Item[]> = ref([
   {
-    label: 'Статистика', icon: 'pi pi-fw pi-video', url: '/',
+    label: 'Статистика', url: '/',
   },
   {
-    label: 'Сервисы', icon: 'pi pi-fw pi-video', url: '/services',
+    label: 'Группы', url: '/groups',
   },
   {
-    label: 'Сервисы1', icon: 'pi pi-fw pi-video', url: '/services1'
+    label: 'Категории', url: '/categories'
   }
 ]) // Список меню
 
@@ -54,8 +54,12 @@ onMounted(() => {
 }
 
 .p-menuitem-active {
-  background: var(--green-400);
+  background: var(--green-600);
   border-radius: 6px;
+}
+
+.p-menuitem-active .p-menuitem-text{
+  color: white
 }
 
 .p-menuitem-content {
@@ -67,16 +71,17 @@ onMounted(() => {
 
 .p-menuitem-link {
   width: 100%;
-  height: 40px;
+  height: 30px;
   margin: 4px;
 }
 
 .p-menuitem-content:hover {
-  background: var(--green-500);
+  background: var(--green-300);
   border-radius: 6px;
+  
 }
 
 .p-menuitem-link:hover .p-menuitem-text {
-  color: white !important;
+  
 }
 </style>~/types/Menu

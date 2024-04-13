@@ -13,22 +13,22 @@ export default defineEventHandler(async (event: H3Event) => {
 
   if(!params) {
     response.statusCode = 500
-    response.message = 'Оши бка при получении параметров для обновления сервиса'
+    response.message = 'Оши бка при получении параметров для обновления Группы'
     throw createError(response)
   }
   try{
-    const sql: string = `UPDATE base.services SET name = $2 WHERE id = $1 RETURNING *`
+    const sql: string = `UPDATE base.groups SET name = $2 WHERE id = $1 RETURNING *`
     const result: QueryResult = await db.query(sql, Object.values(params))
 
     if(!result) {
       response.statusCode = 500
-      response.message = 'Непредвиденная ошибка при обновлении сервиса'
+      response.message = 'Непредвиденная ошибка при обновлении Группы'
       throw createError(response)
     }  
   }
   catch(err: any){
     response.statusCode = 400
-    response.message = `Ошибка получения списка сервисов в таблице services: ${err.toString()}`
+    response.message = `Ошибка получения списка групп в таблице groups: ${err.toString()}`
   }
   return response
 })
