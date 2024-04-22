@@ -5,12 +5,17 @@ export default defineNuxtConfig({
   devServer: {
     port: 3000,
   },
+
   sourcemap: {
     server: true,
     client: true,
   },
 
   ssr: true,
+
+  buildModules: ['@nuxt-modules/compression', {
+    algorithm: 'brotliCompress'
+  }, 'nuxt-webpack-optimisations',],
 
   runtimeConfig: {
     tokenLeads: 'c8e2d508767bd48d929b8d63641eaf80',
@@ -52,7 +57,23 @@ export default defineNuxtConfig({
     },
   },
 
-  modules: ['@nuxtjs/tailwindcss', 'nuxt-primevue', 'nuxt-icons', '@pinia/nuxt', '@nuxt/image'],
+  modules: [
+    'nuxt-delay-hydration',
+    '@nuxtjs/tailwindcss',
+    'nuxt-primevue',
+    'nuxt-icons',
+    '@pinia/nuxt',
+    '@nuxt/image',
+    "nuxt-delay-hydration"
+  ],
+
+  delayHydration: {
+    // enables nuxt-delay-hydration in dev mode for testing
+    // NOTE: you should disable this once you've finished testing, it will break HMR
+    debug: process.env.NODE_ENV === 'development',
+    mode: 'mount'
+  },
+
   primevue: {
     cssLayerOrder: 'tailwind-base, primevue, tailwind-utilities',
     components: {
@@ -86,6 +107,9 @@ export default defineNuxtConfig({
     tsConfig: {
       compilerOptions: {
         verbatimModuleSyntax: false,
+        "types": [
+          "nuxt-webpack-optimisations"
+        ]
       },
     },
   },
@@ -94,6 +118,12 @@ export default defineNuxtConfig({
     plugins: {
       tailwindcss: {},
       autoprefixer: {},
+    },
+  },
+
+  devtools: {
+    timeline: {
+      enabled: true,
     },
   },
 });

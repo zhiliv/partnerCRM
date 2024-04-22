@@ -17,7 +17,7 @@ export default defineEventHandler(async (event: H3Event) => {
     SELECT
       COUNT(*) as count
     FROM 
-      base.groups
+      base.categories
     `
 
 
@@ -26,7 +26,7 @@ export default defineEventHandler(async (event: H3Event) => {
     const result: QueryArrayResult = await db.query(sql) // Выполнение запроса  
     if(!result) {
       response.statusCode = 400
-      response.message = `Непредвиденная ошибка получения списка групп`
+      response.message = `Непредвиденная ошибка получения списка категорий`
     }
 
     const rows: any[] = result.rows
@@ -34,7 +34,7 @@ export default defineEventHandler(async (event: H3Event) => {
   }
   catch(err: any) {
     response.statusCode = 400
-    response.message = `Ошибка получения списка групп в таблице groups: ${err.toString()}`
+    response.message = `Ошибка получения списка категорий в таблице categories: ${err.toString()}`
   }
   return response
 })

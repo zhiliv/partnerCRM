@@ -25,7 +25,7 @@ export const useUserStore = defineStore('users', () => {
   const selectParams = ref<SelectParams>({ offset, limit, order: JSON.stringify([['name', 'ASC']]) }) // Параметры для запроса
   const where = ref<any>({}) // Условия отбора данных
   const filterCondition = ref<any>() // Данные фильтрации
-  const table = ref<string>('users') // Получение наименования категории(таблицы)
+  const table = ref<string>('users')
 
   /**
    * Назначение условий отбора

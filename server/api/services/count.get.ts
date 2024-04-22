@@ -17,16 +17,14 @@ export default defineEventHandler(async (event: H3Event) => {
     SELECT
       COUNT(*) as count
     FROM 
-      base.groups
+      base.services
     `
-
-
 
   try {
     const result: QueryArrayResult = await db.query(sql) // Выполнение запроса  
     if(!result) {
       response.statusCode = 400
-      response.message = `Непредвиденная ошибка получения списка групп`
+      response.message = `Непредвиденная ошибка получения списка сервисов`
     }
 
     const rows: any[] = result.rows
@@ -34,7 +32,7 @@ export default defineEventHandler(async (event: H3Event) => {
   }
   catch(err: any) {
     response.statusCode = 400
-    response.message = `Ошибка получения списка групп в таблице groups: ${err.toString()}`
+    response.message = `Ошибка получения списка сервисов в таблице services: ${err.toString()}`
   }
   return response
 })

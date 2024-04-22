@@ -5,10 +5,10 @@
  * @param {Number} offset - Смещение
  */
 export const getLimit = (limit: number, offset: number) => {
-  return ` 
+  return limit > 0 ? ` 
     LIMIT ${limit} 
     OFFSET ${offset}
-  `
+  ` : ''
 }
 
 /**
@@ -46,58 +46,115 @@ export const getSort = (sort: any) => {
 * @param {Object} filter - Параметры фильтрации
 */
 export const getFilter = (filter: any) => {
+    const groups = Object.keys(filter) // Получение фильтров
+    let result = ' WHERE '
+    groups.forEach((grp: string) => {
+      const keys = Object.keys(filter[grp])
+      keys.forEach((key: string) => {
+        if(filter[grp][key]){
+          let condition = ''
+          switch(filter[grp][key].filter) {
+            case '=':
+              condition = '='
+              break;
+            case '!=':
+              condition = '<>'
+              break
+            case 'like':
+              condition = ' LIKE '
+              break
+            case 'not like':
+              condition = ' NOT LIKE '
+              break
+            case '>':
+              condition = ' > '
+              break
+            case '<':
+              condition = ' < '
+              break
+            default:
+              condition = ' = '
+              break;
+          } // Получение условия фильтрации
+
+          if(filter[grp][key]) {
+            if(result !== ' WHERE ') {
+              result += ` AND `
+            }
+
+            let value = ''
+            if(filter[grp][key].type !== 'date') {
+              if(filter[grp][key].filter === 'like' || filter[grp][key].filter === 'not like') value = `%${filter[grp][key].value}%`
+              else value = filter[grp][key].value  // Получение значение фильтра
+            }
+            if(filter[grp][key].type === 'number') {
+              result += ` ${grp}.${key} ${condition} ${value} `
+            }
+            else if(filter[grp][key].type === 'string') {
+              result += ` ${grp}.${key} ${condition} '${value}' `
+            }
+            else if(filter[grp][key].type === 'date') {
+              result += ` ${grp}.${key} BETWEEN  '${filter[grp][key].value[0]}' AND '${filter[grp][key].value[1]}' `
+            }
+          }        
+        }
+      })
+
+    })
+
+    return result === ' WHERE ' ? '' : result
+
+  /* 
+      groups.forEach((key: string, index: number) => {
+        if(filter[key] && filter[key].filter && filter[key].value && filter[key].type !== 'date') {
+          let condition = ''
+          switch(filter[key].filter) {
+            case '=':
+              condition = '='
+              break;
+            case '!=':
+              condition = '<>'
+              break
+            case 'like':
+              condition = ' LIKE '
+              break
+            case 'not like':
+              condition = ' NOT LIKE '
+              break
+            case '>':
+              condition = ' > '
+              break
+            case '<':
+              condition = ' < '
+              break
+            default:
+              condition = ' = '
+              break;
+          } // Получение условия фильтрации
   
-  const keys = Object.keys(filter) // Получение фильтров
-  let result = keys.length && Object.values(filter).filter((val: any) => val && val.value).length ? ' WHERE ' : ' '
+          let value = ''
+          if(filter[key].filter === 'like' || filter[key].filter === 'not like') value = `%${filter[key].value}%`
+          else value = filter[key].value // Получение значение фильтра
+  
+          if(filter[key].type === 'string') {
+            if(result === ' WHERE ') result += ` LOWER(${key}) ${condition} '${value}' `
+            else result += ` AND LOWER(${key}) ${condition} '${value}'  `
+          }
+  
+          if(filter[key].type === 'number') {
+            if(result === ' WHERE ') result += ` ${key} ${condition} ${value} `
+            else result += ` AND ${key} ${condition} ${value}  `
+          }
+  
+        }
+        else if(filter[key] && filter[key].filter && filter[key].value && filter[key].type === 'date') {
+          if(result === ' WHERE ') {
+            result += ` ${key} BETWEEN  '${filter[key].value[0]}' AND '${filter[key].value[1]}' `
+          }
+          else result += ` AND ${key}  BETWEEN  '${filter[key].value[0]}' AND '${filter[key].value[1]}' `
+        }
+      }) */
+  // })
 
-  keys.forEach((key: string, index: number) => {
-    if(filter[key] && filter[key].filter && filter[key].value && filter[key].type !== 'date') {
-      let condition = ''
-      switch(filter[key].filter) {
-        case '=':
-          condition = '='
-          break;
-        case '!=':
-          condition = '<>'
-          break
-        case 'like':
-          condition = ' LIKE '
-          break
-        case 'not like':
-          condition = ' NOT LIKE '
-          break
-        case '>':
-          condition = ' > '
-          break
-        case '<':
-          condition = ' < '
-          break
-        default:
-          condition = ' = '
-          break;
-      } // Получение условия фильтрации
-
-      let value = ''
-      if(filter[key].filter === 'like' || filter[key].filter === 'not like') value = `%${filter[key].value}%`
-      else value = filter[key].value // Получение значение фильтра
-      
-      if(filter[key].type === 'string'){
-        if(result === ' WHERE ') result += ` LOWER(${key}) ${condition} '${value}' `
-        else result += ` AND LOWER(${key}) ${condition} '${value}'  `  
-      }
-      
-      if(filter[key].type === 'number') {
-        if(result === ' WHERE ') result += ` ${key} ${condition} ${value} `
-        else result += ` AND ${key} ${condition} ${value}  `
-      }
-      
-    }
-    else if(filter[key] && filter[key].filter && filter[key].value && filter[key].type === 'date'){
-      if(result === ' WHERE '){
-        result += ` ${key} BETWEEN  '${filter[key].value[0]}' AND '${filter[key].value[1]}' `
-      }
-      else result += ` AND ${key}  BETWEEN  '${filter[key].value[0]}' AND '${filter[key].value[1]}' `
-    }
-  })
-  return result
+  return ''
 }

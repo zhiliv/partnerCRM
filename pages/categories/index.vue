@@ -1,7 +1,7 @@
 <template>
   <div class="w-full h-full max-h-full shadow-xl surface-0 p-1">
-    <div class="border-b border-l border-r pl-2 pt-2 shadow-xl surface-0 bg-blue-50" id="title" ref="titleBlock">
-      <h5>Группы</h5>
+    <div class="border-b bord4er-l border-r pl-2 pt-2 shadow-xl surface-0 bg-blue-50" id="title" ref="titleBlock">
+      <h5>Категории</h5>
     </div>
     <div class="p-2 flex flex-row w-full shadow-xl border-2">
       <div class="flex-1 w-6">
@@ -15,7 +15,7 @@
     <div class="pt-1 shadow-xl">
       <div>
         <DataTable
-          :value="storeGroups.list"
+          :value="storeCategories.list"
           :scrollHeight="tableHeight"
           scrollable
           resizableColumns
@@ -34,8 +34,8 @@
                 type="number"
                 title="Идентификатор"
                 field="id"
-                v-model:filter="filter.grps.id"
-                v-model:sort="sort.grps.id"
+                v-model:filter="filter.cat.id"
+                v-model:sort="sort.cat.id"
               />
             </template>
           </Column>
@@ -45,8 +45,8 @@
                 type="string"
                 title="Наименование"
                 field="id"
-                v-model:filter="filter.grps.name"
-                v-model:sort="sort.grps.name"
+                v-model:filter="filter.cat.name"
+                v-model:sort="sort.cat.name"
               />
             </template>
           </Column>
@@ -56,8 +56,8 @@
                 type="date"
                 title="Дата создания"
                 field="created_date"
-                v-model:filter="filter.grps.created_date"
-                v-model:sort="sort.grps.created_date"
+                v-model:filter="filter.cat.created_date"
+                v-model:sort="sort.cat.created_date"
               />
             </template>
             <template #body="{ data }">
@@ -67,58 +67,62 @@
         </DataTable>
       </div>
       <div ref="blockPagination">
-        <Paginator :rows="storeGroups.limit" :totalRecords="storeGroups.count" ref="pagination" @click="setPaginaion" />
+        <Paginator
+          :rows="storeCategories.limit"
+          :totalRecords="storeCategories.count"
+          ref="pagination"
+          @click="setPaginaion"
+        />
       </div>
     </div>
   </div>
 </template>
 
 <script lang="ts" setup>
-import type { FieldsGroup, FilterGroup, SortGroup } from '~/types/Group'
 import type {
-  DynamicDialogOptions,
-  DynamicDialogCloseOptions,
+  DynamicDialogOptions
 } from 'primevue/dynamicdialogoptions/DynamicDialogOptions'
 import type { PageState } from 'primevue/paginator/Paginator'
 import type { TitleBlock } from '~/types/Form'
 import moment from 'moment'
-import { useStoreGroups } from '~/stores/groups.store'
+import { useStoreCategories } from '~/stores/categories.store'
 import { useConfirm } from 'primevue/useconfirm'
+import { Category, FilterCategory, FieldsCategory } from '~/types/Category'
 
 const confirm = useConfirm()
 
 useHead({
-  title: 'Группы',
+  title: 'Категории',
 })
 
-const filter = reactive<FilterGroup>({
-  grps: {
+const filter = reactive<FilterCategory>({
+  cat: {
     id: null,
     name: null,
     created_date: null,
   },
 }) // Значение фильтров
 
-const sort = reactive<SortGroup>({
-  grps: {
+const sort = reactive<FilterCategory>({
+  cat: {
     id: null,
     name: null,
     created_date: null,
   },
 }) // Данные сортировки
 
-const storeGroups = useStoreGroups() // Создание стора
+const storeCategories = useStoreCategories() // Создание стора
 const editModal = defineAsyncComponent(() => import('./edit.vue'))
 const dialog: DynamicDialogOptions = useDialog() // Модуль диалогов
 const table: any = ref() // Ссылка на таблицу
 const pagination: Ref<PageState | null> = ref(null) // Идентификатор элемента пагинации
-const selectItem: Ref<FieldsGroup | null> = ref(null) // Выделенный элемент
+const selectItem: Ref<FieldsCategory | null> = ref(null) // Выделенный элемент
 const tableHeight = ref() // Высота таблицы
 const titleBlock: Ref<TitleBlock | null> = ref(null) // Элемент заголовок страницы
 const blockPagination = ref() // Родительский элемент пагинации
 
 const valuePagination: ComputedRef<any> = computed(() => pagination.value?.page || 0) // Получение значения пагинации
-const isLoading: ComputedRef<boolean> = computed(() => storeGroups.isLoading) // Вычисление значения загрузки данных
+const isLoading: ComputedRef<boolean> = computed(() => storeCategories.isLoading) // Вычисление значения загрузки данных
 
 /**
  ** Вычисление активности кнопки "Изменить" и "Удалить"
@@ -128,13 +132,13 @@ const isLoading: ComputedRef<boolean> = computed(() => storeGroups.isLoading) //
 const disabled: ComputedRef<boolean> = computed(() => !selectItem.value)
 
 /**
- ** Получение списка "Группы"
+ ** Получение списка "Категории"
  * @async
  * @function updateList
  */
 const updateList: () => Promise<void> = async () => {
   await nextTick() // Ожидание загрузки DOM
-  await storeGroups.getList() // Получение списка
+  await storeCategories.getList() // Получение списка
 }
 
 /**
@@ -169,14 +173,14 @@ onMounted(async () => {
 })
 
 /**
- ** Добавление нового Группы
+ ** Добавление нового категории
  ** Открывается модальное окно для добавления
  * @function onCreate
  */
 const onCreate = async (): Promise<void> => {
   const options: DynamicDialogOptions = {
     props: {
-      header: 'Создать новую группу',
+      header: 'Создать новую категорию',
       draggable: true, // Разрешить перетаскивание
       position: 'right', // Положение формы
       style: {
@@ -191,23 +195,23 @@ const onCreate = async (): Promise<void> => {
     },
     onClose: async (args: any): Promise<void> => {
       await updateList()
-      selectItem.value = storeGroups.list[0] // Выделение созданного элемента(находится первый в списке)
+      selectItem.value = storeCategories.list[0] // Выделение созданного элемента(находится первый в списке)
     },
     data: {
       type: 'create', // Тип модального окна
     },
   } // Параметры модального окна
-  dialog.open(editModal, options) // Открытие модельного окна для добавления нового Группы
+  dialog.open(editModal, options) // Открытие модельного окна для добавления новой категории
 }
 
 /**
- ** Редактирование Группы
+ ** Редактирование Категории
  * @function onEdit
  */
 const onEdit = async (): Promise<void> => {
   const options: DynamicDialogOptions = {
     props: {
-      header: 'Редактирование Группы',
+      header: 'Редактирование категории',
       draggable: true,
       position: 'right',
       style: {
@@ -228,7 +232,7 @@ const onEdit = async (): Promise<void> => {
       item: selectItem.value,
     },
   }
-  dialog.open(editModal, options) // Открытие модельного окна для добавления нового Группы
+  dialog.open(editModal, options) // Открытие модельного окна для добавления нового Категории
 }
 
 /**
@@ -238,7 +242,7 @@ const onEdit = async (): Promise<void> => {
 const onDelete = async (): Promise<void> => {
   if (selectItem.value) {
     confirm.require({
-      message: `Удалить группу "${selectItem.value.name}"?`,
+      message: `Удалить категорию "${selectItem.value.name}"?`,
       header: 'Подтверждение',
       icon: 'pi pi-exclamation-triangle',
       rejectClass: 'p-button-secondary p-button-outlined',
@@ -247,8 +251,8 @@ const onDelete = async (): Promise<void> => {
       acceptClass: 'p-button-danger',
       accept: async () => {
         if (selectItem.value) {
-          storeGroups.record = selectItem.value
-          const resDel: boolean = await storeGroups.del()
+          storeCategories.record = selectItem.value
+          const resDel: boolean = await storeCategories.del()
           if (resDel) {
             await updateList()
           }
@@ -263,18 +267,18 @@ const onDelete = async (): Promise<void> => {
  * @function setPaginaion
  */
 const setPaginaion = async () => {
-  storeGroups.offset = valuePagination.value * storeGroups.limit
+  storeCategories.offset = valuePagination.value * storeCategories.limit
   await updateList()
 }
 
 watch(filter, async (newVal) => {
-  storeGroups.filter = newVal // Установка фильтра
+  storeCategories.filter = newVal // Установка фильтра
   await updateList()
   selectItem.value = null
 })
 
 watch(sort, async (newVal: any) => {
-  storeGroups.sort = newVal // Установка сортировки
+  storeCategories.sort = newVal // Установка сортировки
   await updateList()
   selectItem.value = null
 })

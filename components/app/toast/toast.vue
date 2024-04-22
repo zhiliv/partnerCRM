@@ -1,6 +1,6 @@
 <!-- eslint-disable vue/valid-v-for -->
 <template>
-  <div class="absolute right-4 bottom-16 z-100">
+  <div class="absolute right-4 bottom-16 z-9999">
     <app-toast-body
       :class="item.class"
       :id="item.id"

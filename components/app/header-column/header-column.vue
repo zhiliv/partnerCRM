@@ -10,8 +10,10 @@
         v-if="type === 'string' || type === 'number'" />
       <Menu ref="menu" id="overlay_menu" :model="items" :popup="true" v-if="type === 'string' || type === 'number'" />
       <InputText class="w-full" size="small" v-model="data" v-if="type === 'string' || type === 'number'" />
-      <Calendar v-model="data" showTime hourFormat="24" v-if="type === 'date'" dateFormat="yy-mm-dd" showSeconds size="small" inputClass="h-[37.2px] text-xs"
-        class="w-full" selectionMode="range" />
+      <ClientOnly>
+        <Calendar v-if="type === 'date'" v-model="data" showTime hourFormat="24" dateFormat="yy-mm-dd" showSeconds size="small" inputClass="h-[37.2px] text-xs"
+          class="w-full" selectionMode="range" />
+      </ClientOnly>
       <Button class="ml-1 pi pi-check min-w-[28px] min-h-[28px] w-[28px] h-[28px]  p-1 text-green-800" text @click="apply" />
       <Button class="mr-1  pi pi-times min-w-[28px] w-[28px] h-[28px] min-h-[28px] p-1 text-red-500" text @click="clear" />
     </div>

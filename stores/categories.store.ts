@@ -1,34 +1,34 @@
-import type { Group } from '~/types/Group'
+import type { Category, FieldsCategory } from '~/types/Category'
 import type { ResponseHTTP } from '~/types/ResponseHTTP'
-import type { FilterGroup, SortGroup, FieldsGroup } from '~/types/Group'
+import type { FilterCategory, SortCategory } from '~/types/Category'
 import { defineStore } from 'pinia'
 
 
-export const useStoreGroups = defineStore('groups', () => {
+export const useStoreCategories = defineStore('categories', () => {
   const list = ref<any>([]) // Список строк полученных из таблицы
   const count = ref<number | any>(0) // Количество строк полученных при запросе
-  const sort = ref<Group>({}) // Сортировка
+  const sort = ref<Category>({}) // Сортировка
   const isLoading = ref<boolean>(true) // Статус загрузки данных
   const limit = ref<number>(50) // Лимит выбора строк
   const offset = ref<number>(0) // Сдвиг поиска
-  const record = ref<FieldsGroup>({}) // Запись
-  const filter = ref<FilterGroup | any>({})
+  const record = ref<FieldsCategory>({}) // Запись
+  const filter = ref<Category | any>({})
 
   /** 
-  ** Получение списка групп
+  ** Получение списка категорий
   * @function getList
   */
   const getList = async (): Promise<boolean> => {
     await getCount() // Получение количества всех записей
     isLoading.value = true
     // await getCount()
-    const url: string = `/api/groups/all` // Ссылка для получения данных
+    const url: string = `/api/categories/all` // Ссылка для получения данных
     try {
       const response: ResponseHTTP = await $fetch(url, {
         params: { limit: limit.value, offset: offset.value, filter: filter.value, sort: sort.value },
       }) // Получение списка с сервера1`
       const checkResponse: boolean = progressingResponse(response) // Проверка на успешное выполнение
-      if(checkResponse){
+      if(checkResponse) {
         list.value = response.data // Установка списка
         isLoading.value = false // Статус загрузки
         return true
@@ -47,13 +47,13 @@ export const useStoreGroups = defineStore('groups', () => {
   const getCount = async (): Promise<boolean> => {
     isLoading.value = true // Статус загрузки
     // await getCount()
-    const url: string = `/api/groups/count` // Ссылка для получения количества записей
+    const url: string = `/api/categories/count` // Ссылка для получения количества записей
     try {
-      const response: ResponseHTTP = await $fetch(url, {params: {limit: limit.value, offset: offset.value, filter: filter.value, sort: sort.value}}) // Получение количества с сервера
-      const checkResponse: boolean  = await progressingResponse(response)
-      if(checkResponse){
+      const response: ResponseHTTP = await $fetch(url, { params: { limit: limit.value, offset: offset.value, filter: filter.value, sort: sort.value } }) // Получение количества с сервера
+      const checkResponse: boolean = await progressingResponse(response)
+      if(checkResponse) {
         count.value = +response.data
-        isLoading.value = false  
+        isLoading.value = false
         return true
       }
     }
@@ -68,7 +68,7 @@ export const useStoreGroups = defineStore('groups', () => {
   * @function create
   */
   const create = async (): Promise<boolean> => {
-    const url: string = `/api/groups/add` // Ссылка 
+    const url: string = `/api/categories/add` // Ссылка 
     try {
       const response: ResponseHTTP = await $fetch(url, { method: 'put', body: record.value }) // Получение количества с сервера
       progressingResponse(response, true)
@@ -91,7 +91,7 @@ export const useStoreGroups = defineStore('groups', () => {
     }
 
     const id: number = record.value.id // Получение идентификатора
-    const url: string = `/api/groups/get` // Ссылка
+    const url: string = `/api/categories/get` // Ссылка
     try {
       const response: ResponseHTTP = await $fetch(url, { params: { id } })
       await progressingResponse(response)
@@ -103,14 +103,14 @@ export const useStoreGroups = defineStore('groups', () => {
     }
     return false
   }
-  
-  
+
+
   /** 
   ** Обновление записи
   * @function update
   */
   const update = async (): Promise<boolean> => {
-    const url: string = `/api/groups/update` // Ссылка
+    const url: string = `/api/categories/update` // Ссылка
     try {
       const response: ResponseHTTP = await $fetch(url, { method: 'post', body: record.value }) // Получение количества с сервера
       await progressingResponse(response, true)
@@ -121,13 +121,13 @@ export const useStoreGroups = defineStore('groups', () => {
     }
     return false
   }
-  
+
   /** 
   ** Удаление записи
   * @function del
   */
   const del = async (): Promise<boolean> => {
-    const url: string = `/api/groups/del` // Ссылка
+    const url: string = `/api/categories/del` // Ссылка
     try {
       const response: ResponseHTTP = await $fetch(url, { method: 'delete', body: record.value }) // Получение количества с сервера
       const checkResponse: boolean = progressingResponse(response, true) // Проверка на успешное выполнение 
@@ -136,9 +136,9 @@ export const useStoreGroups = defineStore('groups', () => {
     catch(err: any) {
       showToast({ message: err, type: 'error' })
     }
-    
+
     return false
   }
-  
+
   return { getList, getCount, count, list, limit, offset, create, isLoading, get, record, update, del, sort, filter }
 })

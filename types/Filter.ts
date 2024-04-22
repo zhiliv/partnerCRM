@@ -6,7 +6,6 @@
 * @member {any} value - Значение
 */
 export interface Filter {
-  field: string
   filter: string
   value: any
 }
@@ -18,6 +17,5 @@ export interface Filter {
 * @member {string} order - Сортировка
 */
 export interface Sort {
-  field: string | null
   value: string | null
 }

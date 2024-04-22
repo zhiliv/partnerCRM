@@ -1,7 +1,7 @@
 <template>
   <div class="w-full h-full flex flex-wrap">
     <div class="w-full h-[91%]">
-      <label for="name">Наименование Группы</label>
+      <label for="name">Наименование категории</label>
       <InputText id="name" type="text" v-model="record.name" class="w-full" :invalid="isValid" />
     </div>
     <div class="pt-4 w-full justify-between flex border-t" v-if="isTypeModal === 'create'">
@@ -16,17 +16,17 @@
 </template>
 
 <script setup lang="ts">
-import type { Group, FieldsGroup } from '~/types/Group'
-import { useStoreGroups } from '~/stores/groups.store'
+import type { Category, FieldsCategory } from '~/types/Category'
+import { useStoreCategories } from '~/stores/categories.store'
 
-const storeGroups = useStoreGroups() // Создание стора
+const storeCategories = useStoreCategories() // Создание стора
 const dialogRef: any = inject('dialogRef') // Ссылка на диалоговое окно
 const isTypeModal: Ref<'create' | 'edit' | null> = ref(null) // Тип формы(создание\редактирование)
-const record = reactive<FieldsGroup>({}) // Данные записи
+const record = reactive<FieldsCategory>({}) // Данные записи
 const isChanged: Ref<boolean> = ref(false) // Признак изменений записи
 
 /** 
-** Вычисление валидности поля "Наименование Группы"
+** Вычисление валидности поля "Наименование категории"
 * @function isValid
 */
 const isValid: ComputedRef<boolean> = computed(() => !record || !record.name || record.name.length <= 3)
@@ -37,12 +37,12 @@ const isValid: ComputedRef<boolean> = computed(() => !record || !record.name || 
 */
 const create = async () => {
   if(!record.name) {
-    showToast({ message: 'Необходимо заполнить поле "Наименование Группы"', type: 'warn' })
+    showToast({ message: 'Необходимо заполнить поле "Наименование категории"', type: 'warn' })
   }
   if(record.name) {
-    storeGroups.record = record 
-    await storeGroups.create()  // Создание нового Группы
-    const newRecord: FieldsGroup = storeGroups.record // Передача созданного Группы в родительскую форму
+    storeCategories.record = record 
+    await storeCategories.create()  // Создание новой категории
+    const newRecord: FieldsCategory = storeCategories.record // Передача созданной категории в родительскую форму
     dialogRef.value.close(newRecord) // Закрытие формы и отправка данных в родительскую форму
   }
 }
@@ -53,12 +53,12 @@ const create = async () => {
 */
 const update = async () => {
   if(!record.name) {
-    showToast({ message: 'Необходимо заполнить поле "Наименование Группы"', type: 'warn' })
+    showToast({ message: 'Необходимо заполнить поле "Наименование категории"', type: 'warn' })
   }
 
   if(record.name) {
-    storeGroups.record = record
-    await storeGroups.update() // Обновление Группы
+    storeCategories.record = record
+    await storeCategories.update() // Обновление категории
     close()
   }
 }
@@ -74,15 +74,15 @@ const close = () => {
 onMounted(async () => {
   isTypeModal.value = dialogRef.value.data.type // Установка типа формы
   if(isTypeModal.value === 'edit') {
-    storeGroups.record = dialogRef.value.data.item
-    await storeGroups.get()
-    record.id = storeGroups.record.id // Присвоение идентификатора
-    record.name = storeGroups.record.name // Присвоение имени
+    storeCategories.record = dialogRef.value.data.item
+    await storeCategories.get()
+    record.id = storeCategories.record.id // Присвоение идентификатора
+    record.name = storeCategories.record.name // Присвоение имени
   }
 })
 
 watch(record, (newVal) => {
-  isChanged.value = record.name !== storeGroups.record.name
+  isChanged.value = record.name !== storeCategories.record.name
 })
 </script>
 

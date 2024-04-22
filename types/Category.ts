@@ -1,63 +1,65 @@
 import type { TimeStamp } from './Time'
-import type { Filter, Sort } from './Filter'
+import type {  Sort } from './Filter'
 
-export interface FieldsGroup{
-  id?: number
-  created_date?: TimeStamp
-  update_dated?: TimeStamp
-  name?: string
+/** 
+** Описание интерфейса для полей категории
+* @interface FieldsCategory
+* @member {Number} id - Идентификатор
+* @member {String} name - Наименование Группы
+* @member {String} created_date - Дата создания в формате timezone
+* @member {String} update_date - Дата обновления записи в формате timezone
+*/
+export interface FieldsCategory {
+  id?: number | null
+  created_date?: TimeStamp | null
+  update_dated?: TimeStamp | null
+  name?: string | null
 }
 
 /**
- * @interface Group
+ * @interface Category
  * @member {Number} id - Идентификатор
  * @member {String} name - Наименование Группы
  * @member {String} created_date - Дата создания в формате timezone
  * @member {String} update_date - Дата обновления записи в формате timezone
  */
-export interface Group {
-  grps: FieldsGroup
+export interface Category {
+  cat: FieldsCategory
 }
 
 /**
  ** Описание интерфейса фильтров
- * @interface FilterGroup
+ * @interface FilterCategory
  * @member {Number} id - Идентификатор
  * @member {String} name - Наименование Группы
  * @member {String} created_date - Дата создани
  */
-export interface FilterGroup {
-  grps: {
-    id?: Filter | null
-    name?: Filter | null
-    created_date?: Filter | null 
-  }
+export interface FilterCategory {
+  cat: FieldsCategory
 }
 
 
 /**
  ** Описание интерфейса фильтров
- * @interface SortGroup
+ * @interface SortCategory
  * @member {Number} id - Идентификатор
  * @member {String} name - Наименование Группы
  * @member {String} created_date - Дата создани
  */
-export interface SortGroup {
-  grps: {
-    id?: Sort | null
-    name?: Sort | null
-    created_date?: Sort | null  
-  }
+export interface SortCategory {
+  id?: Sort | null
+  name?: Sort | null
+  created_date?: Sort | null
 }
 
 /** 
 ** Описание интерфейса параметров запроса для получения списка
-* @interface ParamsGetServices
+* @interface ParamsGetCategory
 */
-export interface ParamsGetGroups {
+export interface ParamsGetCategory {
   limit?: number
   offset?: number
   order?: string
-  filter: Group
-  sort: Group
+  filter: Category
+  sort: Category
 }

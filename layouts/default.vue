@@ -1,19 +1,23 @@
 <template>
   <div class="min-w-screen h-screen max-h-screen select-none">
     <div class="h-full w-full flex flex-col lg:flex-row">
-      <MegaMenu :model="items" orientation="vertical" class="bg-zinc-50 shadow-xl surface-0">
+      <LazyMegaMenu :model="items" orientation="vertical" class="bg-zinc-50 shadow-xl surface-0" v-if="isLoading">
         <template #start>
           <!-- Пользователь -->
         </template>
-      </MegaMenu>
+      </LazyMegaMenu>
       <nuxtPage />
     </div>
   </div>
   <app-toast />
+  <LazyDynamicDialog v-if="isLoading" />
+  <LazyConfirmDialog v-if="isLoading" />
 </template>
 <script lang="ts" setup>
 import type { Item } from '~/types/Menu'
 import type { RouteLocationNormalizedLoaded } from 'vue-router'
+
+const isLoading = ref<boolean>(false)
 const route: RouteLocationNormalizedLoaded = useRoute() // Получение значения роута
 
 const items: Ref<Item[]> = ref([
@@ -25,6 +29,9 @@ const items: Ref<Item[]> = ref([
   },
   {
     label: 'Категории', url: '/categories'
+  },
+  {
+    label: 'Сервисы', url: '/services'
   }
 ]) // Список меню
 
@@ -35,6 +42,7 @@ onMounted(() => {
       items.value[index].class = 'p-menuitem-active'
     }
   })
+  isLoading.value = true
 })
 </script>
 
