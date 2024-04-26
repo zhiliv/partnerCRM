@@ -19,37 +19,6 @@ export interface Group {
   grps: FieldsGroup
 }
 
-/**
- ** Описание интерфейса фильтров
- * @interface FilterGroup
- * @member {Number} id - Идентификатор
- * @member {String} name - Наименование Группы
- * @member {String} created_date - Дата создани
- */
-export interface FilterGroup {
-  grps: {
-    id?: Filter | null
-    name?: Filter | null
-    created_date?: Filter | null 
-  }
-}
-
-
-/**
- ** Описание интерфейса фильтров
- * @interface SortGroup
- * @member {Number} id - Идентификатор
- * @member {String} name - Наименование Группы
- * @member {String} created_date - Дата создани
- */
-export interface SortGroup {
-  grps: {
-    id?: Sort | null
-    name?: Sort | null
-    created_date?: Sort | null  
-  }
-}
-
 /** 
 ** Описание интерфейса параметров запроса для получения списка
 * @interface ParamsGetServices

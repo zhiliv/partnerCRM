@@ -16,7 +16,7 @@
 </template>
 
 <script setup lang="ts">
-import type { Category, FieldsCategory } from '~/types/Category'
+import type { FieldsCategory } from '~/types/Category'
 import { useStoreCategories } from '~/stores/categories.store'
 
 const storeCategories = useStoreCategories() // Создание стора

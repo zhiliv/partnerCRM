@@ -72,10 +72,9 @@
 </template>
 
 <script lang="ts" setup>
-import type { FieldsGroup, FilterGroup, SortGroup } from '~/types/Group'
+import type { FieldsGroup, Group } from '~/types/Group'
 import type {
-  DynamicDialogOptions,
-  DynamicDialogCloseOptions,
+  DynamicDialogOptions
 } from 'primevue/dynamicdialogoptions/DynamicDialogOptions'
 import type { PageState } from 'primevue/paginator/Paginator'
 import type { TitleBlock } from '~/types/Form'
@@ -89,7 +88,7 @@ useHead({
   title: 'Группы',
 })
 
-const filter = reactive<FilterGroup>({
+const filter = reactive<Group>({
   grps: {
     id: null,
     name: null,
@@ -97,7 +96,7 @@ const filter = reactive<FilterGroup>({
   },
 }) // Значение фильтров
 
-const sort = reactive<SortGroup>({
+const sort = reactive<Group>({
   grps: {
     id: null,
     name: null,

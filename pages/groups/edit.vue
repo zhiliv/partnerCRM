@@ -16,7 +16,7 @@
 </template>
 
 <script setup lang="ts">
-import type { Group, FieldsGroup } from '~/types/Group'
+import type { FieldsGroup } from '~/types/Group'
 import { useStoreGroups } from '~/stores/groups.store'
 
 const storeGroups = useStoreGroups() // Создание стора

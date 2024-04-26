@@ -105,7 +105,7 @@ import type { TitleBlock } from '~/types/Form'
 import moment from 'moment'
 import { useStoreServices } from '~/stores/services.store'
 import { useConfirm } from 'primevue/useconfirm'
-import { FilterService, FieldsService } from '~/types/Service'
+import { FieldsService, Service } from '~/types/Service'
 
 const confirm = useConfirm()
 
@@ -113,7 +113,7 @@ useHead({
   title: 'Сервисы',
 })
 
-const filter = reactive<FilterService>({
+const filter = reactive<Service>({
   serv: {
     id: null,
     name: null,
@@ -125,7 +125,7 @@ const filter = reactive<FilterService>({
   },
 }) // Значение фильтров
 
-const sort = reactive<FilterService>({
+const sort = reactive<Service>({
   serv: {
     id: null,
     name: null,

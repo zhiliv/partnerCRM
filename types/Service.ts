@@ -1,5 +1,4 @@
 import type { TimeStamp } from './Time'
-import type {  Sort } from './Filter'
 import type { FieldsCategory } from './Category'
 import type { FieldsGroup } from './Group'
 
@@ -31,36 +30,7 @@ export interface FieldsService{
 
 export interface Service {
   serv: FieldsService
-}
-
-
-/**
- ** Описание интерфейса фильтров
- * @interface FilterService
- * @member {Number} id - Идентификатор
- * @member {String} name - Наименование Группы
- * @member {String} created_date - Дата создани
- */
-export interface FilterService {
-  serv: FieldsService
   g?: FieldsGroup
-}
-
-
-/**
- ** Описание интерфейса фильтров
- * @interface SortService
- * @member {Number} id - Идентификатор
- * @member {String} name - Наименование Группы
- * @member {String} created_date - Дата создани
- */
-export interface SortService {
-  id?: Sort | null
-  name?: Sort | null
-  created_date?: Sort | null
-  id_group?: number
-  id_category?: number
-  
 }
 
 /** 

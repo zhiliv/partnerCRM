@@ -27,31 +27,6 @@ export interface Category {
   cat: FieldsCategory
 }
 
-/**
- ** Описание интерфейса фильтров
- * @interface FilterCategory
- * @member {Number} id - Идентификатор
- * @member {String} name - Наименование Группы
- * @member {String} created_date - Дата создани
- */
-export interface FilterCategory {
-  cat: FieldsCategory
-}
-
-
-/**
- ** Описание интерфейса фильтров
- * @interface SortCategory
- * @member {Number} id - Идентификатор
- * @member {String} name - Наименование Группы
- * @member {String} created_date - Дата создани
- */
-export interface SortCategory {
-  id?: Sort | null
-  name?: Sort | null
-  created_date?: Sort | null
-}
-
 /** 
 ** Описание интерфейса параметров запроса для получения списка
 * @interface ParamsGetCategory

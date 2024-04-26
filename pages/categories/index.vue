@@ -83,7 +83,7 @@ import type { TitleBlock } from '~/types/Form'
 import moment from 'moment'
 import { useStoreCategories } from '~/stores/categories.store'
 import { useConfirm } from 'primevue/useconfirm'
-import { Category, FilterCategory, FieldsCategory } from '~/types/Category'
+import { FieldsCategory, Category  } from '~/types/Category'
 
 const confirm = useConfirm()
 
@@ -91,7 +91,7 @@ useHead({
   title: 'Категории',
 })
 
-const filter = reactive<FilterCategory>({
+const filter = reactive<Category>({
   cat: {
     id: null,
     name: null,
@@ -99,7 +99,7 @@ const filter = reactive<FilterCategory>({
   },
 }) // Значение фильтров
 
-const sort = reactive<FilterCategory>({
+const sort = reactive<Category>({
   cat: {
     id: null,
     name: null,
