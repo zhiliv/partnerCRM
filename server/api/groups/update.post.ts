@@ -28,7 +28,7 @@ export default defineEventHandler(async (event: H3Event) => {
   }
   catch(err: any){
     response.statusCode = 400
-    response.message = `Ошибка получения списка групп в таблице groups: ${err.toString()}`
+    response.message = `Ошибка при обновлении Группы: ${err.toString()}`
   }
   return response
 })

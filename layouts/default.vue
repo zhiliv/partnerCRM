@@ -67,7 +67,8 @@ const items = ref<Item[]>([
     label: 'Справочники',
     list: [
       { label: 'Способ получения денег', url: '/method_get_money' },
-      { label: 'Документы', url: '/documents' }
+      { label: 'Документы', url: '/documents' },
+      { label: 'Периоды', url: '/periods' },
     ],
   },
 ]) // Список меню

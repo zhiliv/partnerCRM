@@ -47,7 +47,7 @@ export default defineEventHandler(async (event: H3Event) => {
   catch(err: any) {
     await db.query('ROLLBACK')
     response.statusCode = 400
-    response.message = `Ошибка получения списка сервисов в таблице services: ${err.toString()}`
+    response.message = `Ошибка при обновлении сервиса: ${err.toString()}`
   }
   return response
 })

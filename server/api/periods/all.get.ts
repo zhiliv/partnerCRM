@@ -10,18 +10,18 @@ export default defineEventHandler(async (event: H3Event) => {
   const params: ParamsQuery = await getQuery(event) // Получение параметров запроса
   const response = {
     statusCode: 200,
-    message: 'Список документов получен успешно',
+    message: 'Список периодов получен успешно',
     data: <any>[]
   }
 
   const sql = `
     SELECT
-      doc.id,
-      doc.name,
-      doc.created_date,
-      doc.updated_date
+      prd.id,
+      prd.name,
+      prd.padez,
+      prd.mnozh
     FROM 
-      "references".documents as doc
+      "references".periods as prd
       ${getFilter(JSON.parse(params.filter))}
       ${Object.keys(JSON.parse(params.sort)).length > 0 ? getSort(params.sort) : ' ORDER BY id DESC '}
     ${getLimit(params.limit, params.offset)}
@@ -31,7 +31,7 @@ export default defineEventHandler(async (event: H3Event) => {
     const result: QueryArrayResult = await db.query(sql) // Выполнение запроса  
     if(!result) {
       response.statusCode = 400
-      response.message = `Непредвиденная ошибка получения списка документов`
+      response.message = `Непредвиденная ошибка получения списка периодов`
     }
 
     const rows: FieldsMethodGetMoney[][] = result.rows
@@ -39,7 +39,7 @@ export default defineEventHandler(async (event: H3Event) => {
   }
   catch(err: any) {
     response.statusCode = 400
-    response.message = `Ошибка получения списка документов в таблице documents: ${err.toString()}`
+    response.message = `Ошибка получения списка периодов: ${err.toString()}`
   }
   return response
 })

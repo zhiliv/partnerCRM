@@ -11,24 +11,33 @@ export default defineEventHandler(async (event: H3Event) => {
     data: null
   }
 
+
   if(!params) {
     response.statusCode = 500
-    response.message = 'Ошибка при получении параметров для обновления категории'
+    response.message = 'Ошибка при получении параметров для обновления периода'
     return response
   }
+
+  const obj = {
+    id: params.id,
+    name: params.name,
+    padez: params.padez,
+    mnozh: params.mnozh
+  }
+
   try {
-    const sql: string = `UPDATE base.categories SET name = $2 WHERE id = $1 RETURNING *`
-    const result: QueryResult = await db.query(sql, Object.values(params))
+    const sql: string = `UPDATE "references".periods SET name = $2, padez = $3, mnozh = $4 WHERE id = $1 RETURNING *`
+    const result: QueryResult = await db.query(sql, Object.values(obj))
 
     if(!result) {
       response.statusCode = 500
-      response.message = 'Непредвиденная ошибка при обновлении категории'
+      response.message = 'Непредвиденная ошибка при обновлении периода'
       return response
     }
   }
   catch(err: any) {
     response.statusCode = 400
-    response.message = `Ошибка обновлении категории: ${err.toString()}`
+    response.message = `Ошибка обновлении периода: ${err.toString()}`
   }
   return response
 })

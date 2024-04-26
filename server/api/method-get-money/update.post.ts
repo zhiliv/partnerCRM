@@ -16,9 +16,14 @@ export default defineEventHandler(async (event: H3Event) => {
     response.message = 'Ошибка при получении параметров для обновления способа получения денег'
     return response
   }
+  const obj = {
+    id: params.id,
+    name: params.name
+  }
+  
   try{
-    const sql: string = `UPDATE base.categories SET name = $2 WHERE id = $1 RETURNING *`
-    const result: QueryResult = await db.query(sql, Object.values(params))
+    const sql: string = `UPDATE "references".method_get_money SET name = $2 WHERE id = $1 RETURNING *`
+    const result: QueryResult = await db.query(sql, Object.values(obj))
 
     if(!result) {
       response.statusCode = 500
@@ -28,7 +33,7 @@ export default defineEventHandler(async (event: H3Event) => {
   }
   catch(err: any){
     response.statusCode = 400
-    response.message = `Ошибка получения списка способов получения денег в таблице method_get_money: ${err.toString()}`
+    response.message = `Ошибка при обновлении способа получения денег: ${err.toString()}`
   }
   return response
 })
