@@ -7,12 +7,12 @@ import { db } from '~/server/db'
 export default defineEventHandler(async (event: H3Event) => {
   const response: ResponseHTTP = {
     statusCode: 200,
-    message: 'Документ удален',
+    message: 'Способ получения денег удален',
     data: null
   }
   const params: FieldsMethodGetMoney = await readBody(event) // Параметры запроса
   if(!params || !params.id) {
-    response.message = 'Не передан идентификатор документа'
+    response.message = 'Не передан идентификатор Способа получения денег'
     response.statusCode = 500
     return response
   }
@@ -22,18 +22,18 @@ export default defineEventHandler(async (event: H3Event) => {
   try {
     const result: QueryResult = await db.query(sql, [id])
     if(!result) {
-      response.message = 'Непредвиденная ошибка при удалении документа'
+      response.message = 'Непредвиденная ошибка при удалении способа получения денег'
       response.statusCode = 500
       return response
     }
     if(result.rowCount === 0) {
-      response.message = 'Документ не найдена'
+      response.message = 'Способ получения денег не найдена'
       response.statusCode = 400
       return response
     }
   }
   catch(err: any) {
-    response.message = `Ошибка при удалении документа: ${err.message}`
+    response.message = `Ошибка при удалении способа получения денег: ${err.message}`
     response.statusCode = 400
   }
 

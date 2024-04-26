@@ -9,7 +9,7 @@ export default defineEventHandler(async (event: H3Event) => {
   const params: ParamsGetGroups = getQuery(event) // Получение параметров запроса
   const response = {
     statusCode: 200,
-    message: 'Список способов получения денег получен успешно',
+    message: 'Список документов получен успешно',
     data: 0
   }
 
@@ -17,7 +17,7 @@ export default defineEventHandler(async (event: H3Event) => {
     SELECT
       COUNT(*) as count
     FROM 
-      "references".method_get_money
+      "references".documents
     `
 
 
@@ -26,7 +26,7 @@ export default defineEventHandler(async (event: H3Event) => {
     const result: QueryArrayResult = await db.query(sql) // Выполнение запроса  
     if(!result) {
       response.statusCode = 400
-      response.message = `Непредвиденная ошибка получения списка способов получения денег`
+      response.message = `Непредвиденная ошибка получения списка документов`
     }
 
     const rows: any[] = result.rows
@@ -34,7 +34,7 @@ export default defineEventHandler(async (event: H3Event) => {
   }
   catch(err: any) {
     response.statusCode = 400
-    response.message = `Ошибка получения списка способов получения денег в таблице method_get_money: ${err.toString()}`
+    response.message = `Ошибка получения списка документов в таблице documents: ${err.toString()}`
   }
   return response
 })

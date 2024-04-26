@@ -1,7 +1,7 @@
 <template>
   <div class="w-full h-full flex flex-wrap">
     <div class="w-full h-[91%]">
-      <label for="name">Наименование способа получения денег</label>
+      <label for="name">Наименование документа</label>
       <InputText id="name" type="text" v-model="record.name" class="w-full" :invalid="isValid" />
     </div>
     <div class="pt-4 w-full justify-between flex border-t" v-if="isTypeModal === 'create'">
@@ -30,19 +30,20 @@
 </template>
 
 <script setup lang="ts">
-import { useStoreMethodGetMoney } from '~/stores/methodGetMoney.store'
-import type { FieldsMethodGetMoney } from '~/types/Method_get_money';
+import { useStoreDocuments } from '~/stores/documents.store'
+import type { FieldsDocument, Document } from '~/types/Document';
 
-const storeMethodGetMoney = useStoreMethodGetMoney() // Создание стора
+
+const storeDocuments = useStoreDocuments() // Создание стора
 const dialogRef: any = inject('dialogRef') // Ссылка на диалоговое окно
 const isTypeModal: Ref<'create' | 'edit' | null> = ref(null) // Тип формы(создание\редактирование)
-const record = reactive<FieldsMethodGetMoney>({
+const record = reactive<FieldsDocument>({
   name: null
 }) // Данные записи
 const isChanged: Ref<boolean> = ref(false) // Признак изменений записи
 
 /**
- ** Вычисление валидности поля "Наименование способа получения денег"
+ ** Вычисление валидности поля "Наименование документа"
  * @function isValid
  */
 const isValid: ComputedRef<boolean> = computed(() => !record || !record.name || record.name.length <= 3)
@@ -53,12 +54,12 @@ const isValid: ComputedRef<boolean> = computed(() => !record || !record.name || 
  */
 const create = async () => {
   if (!record.name) {
-    showToast({ message: 'Необходимо заполнить поле "Наименование способа получения денег"', type: 'warn' })
+    showToast({ message: 'Необходимо заполнить поле "Наименование документа"', type: 'warn' })
   }
   if (record.name) {
-    storeMethodGetMoney.record = record
-    await storeMethodGetMoney.create() // Создание нового способа получения денег
-    const newRecord: FieldsMethodGetMoney = storeMethodGetMoney.record // Передача созданного способа получения денег в родительскую форму
+    storeDocuments.record = record
+    await storeDocuments.create() // Создание нового документа
+    const newRecord: FieldsDocument = storeDocuments.record // Передача созданного документа в родительскую форму
     dialogRef.value.close(newRecord) // Закрытие формы и отправка данных в родительскую форму
   }
 }
@@ -69,12 +70,12 @@ const create = async () => {
  */
 const update = async () => {
   if (!record.name) {
-    showToast({ message: 'Необходимо заполнить поле "Наименование способа получения денег"', type: 'warn' })
+    showToast({ message: 'Необходимо заполнить поле "Наименование документа"', type: 'warn' })
   }
 
   if (record.name) {
-    storeMethodGetMoney.record = record
-    await storeMethodGetMoney.update() // Обновление способа получения денег
+    storeDocuments.record = record
+    await storeDocuments.update() // Обновление документа
     close()
   }
 }
@@ -90,15 +91,15 @@ const close = () => {
 onMounted(async () => {
   isTypeModal.value = dialogRef.value.data.type // Установка типа формы
   if (isTypeModal.value === 'edit') {
-    storeMethodGetMoney.record = dialogRef.value.data.item
-    await storeMethodGetMoney.get()
-    record.id = storeMethodGetMoney.record.id // Присвоение идентификатора
-    record.name = storeMethodGetMoney.record.name // Присвоение имени
+    storeDocuments.record = dialogRef.value.data.item
+    await storeDocuments.get()
+    record.id = storeDocuments.record.id // Присвоение идентификатора
+    record.name = storeDocuments.record.name // Присвоение имени
   }
 })
 
 watch(record, (newVal) => {
-  isChanged.value = record.name !== storeMethodGetMoney.record.name
+  isChanged.value = record.name !== storeDocuments.record.name
 })
 </script>
 

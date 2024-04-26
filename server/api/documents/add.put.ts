@@ -13,27 +13,26 @@ export default defineEventHandler(async (event: H3Event) => {
 
   if(!params) {
     response.statusCode = 500
-    response.message = 'Ошибка при получении параметров для создания нового способа получения денег'
+    response.message = 'Ошибка при получении параметров для создания нового документа'
     return response
   }
 
+  const sql: string = `INSERT INTO "references".documents(name) VALUES($1) RETURNING *`
   try{
-    const sql: string = `INSERT INTO "references".method_get_money(name) VALUES($1) RETURNING *`
     const result: QueryResult = await db.query(sql, Object.values(params))
 
     if(!result) {
       response.statusCode = 500
-      response.message = 'Непредвиденная ошибка при создании способа получения денег'
+      response.message = 'Непредвиденная ошибка при создании документа'
       return response
     }
 
     response.statusCode = 200
-    response.message = 'Способ получения создан успешно'
+    response.message = 'Документ создан успешно'
     response.data = result.rows[0]  
-  }
-  catch(err:any){
+  }catch(err:any){
     response.statusCode = 400
-    response.message = `Ошибка при добавлении способа получения денег: ${err.toString()}`
+    response.message = `Ошибка при создании документа:${err.toString()}`
   }
   
   return response
