@@ -1,87 +1,83 @@
 <template>
-  <div class="w-full h-full max-h-full shadow-xl surface-0 p-1">
-    <div class="border-b bord4er-l border-r pl-2 pt-2 shadow-xl surface-0 bg-blue-50" id="title" ref="titleBlock">
-      <h5>Категории</h5>
+  <div class="border-b bord4er-l border-r pl-2 pt-2 shadow-xl surface-0 bg-blue-50" id="title" ref="titleBlock">
+    <h5>Категории</h5>
+  </div>
+  <div class="p-2 flex flex-row w-full shadow-xl border-2">
+    <div class="flex-1 w-6">
+      <Button @click="onCreate" size="small">Создать</Button>
+      <Button @click="onEdit" class="ml-2" severity="success" :disabled="disabled" size="small">Изменить</Button>
     </div>
-    <div class="p-2 flex flex-row w-full shadow-xl border-2">
-      <div class="flex-1 w-6">
-        <Button @click="onCreate" size="small">Создать</Button>
-        <Button @click="onEdit" class="ml-2" severity="success" :disabled="disabled" size="small">Изменить</Button>
-      </div>
-      <div class="pr-2">
-        <Button severity="danger" :disabled="disabled" @click="onDelete" size="small">Удалить</Button>
-      </div>
+    <div class="pr-2">
+      <Button severity="danger" :disabled="disabled" @click="onDelete" size="small">Удалить</Button>
     </div>
-    <div class="pt-1 shadow-xl">
-      <div>
-        <DataTable
-          :value="storeCategories.list"
-          :scrollHeight="tableHeight"
-          scrollable
-          resizableColumns
-          columnResizeMode="fit"
-          showGridlines
-          v-model:selection="selectItem"
-          size="small"
-          dataKey="id"
-          selectionMode="single"
-          ref="table"
-          :loading="isLoading"
-        >
-          <Column field="id" class="w-[180px]">
-            <template #header>
-              <app-header-column
-                type="number"
-                title="Идентификатор"
-                field="id"
-                v-model:filter="filter.cat.id"
-                v-model:sort="sort.cat.id"
-              />
-            </template>
-          </Column>
-          <Column field="name" class="w-[75%]">
-            <template #header>
-              <app-header-column
-                type="string"
-                title="Наименование"
-                field="id"
-                v-model:filter="filter.cat.name"
-                v-model:sort="sort.cat.name"
-              />
-            </template>
-          </Column>
-          <Column class="w-[350px]">
-            <template #header>
-              <app-header-column
-                type="date"
-                title="Дата создания"
-                field="created_date"
-                v-model:filter="filter.cat.created_date"
-                v-model:sort="sort.cat.created_date"
-              />
-            </template>
-            <template #body="{ data }">
-              {{ moment(data.created_date).format('YYYY.MM.DD HH:mm:ss') }}
-            </template>
-          </Column>
-        </DataTable>
-      </div>
-      <div ref="blockPagination">
-        <Paginator
-          :rows="storeCategories.limit"
-          :totalRecords="storeCategories.count"
-          ref="pagination"
-          @click="setPaginaion"
-        />
-      </div>
+  </div>
+  <div class="pt-1 shadow-xl">
+    <div>
+      <DataTable
+        :value="storeCategories.list"
+        :scrollHeight="tableHeight"
+        scrollable
+        resizableColumns
+        columnResizeMode="fit"
+        showGridlines
+        v-model:selection="selectItem"
+        size="small"
+        dataKey="id"
+        selectionMode="single"
+        ref="table"
+        :loading="isLoading"
+      >
+        <Column field="id" class="w-[180px]">
+          <template #header>
+            <app-header-column
+              type="number"
+              title="Идентификатор"
+              field="id"
+              v-model:filter="filter.cat.id"
+              v-model:sort="sort.cat.id"
+            />
+          </template>
+        </Column>
+        <Column field="name" class="w-[75%]">
+          <template #header>
+            <app-header-column
+              type="string"
+              title="Наименование"
+              field="id"
+              v-model:filter="filter.cat.name"
+              v-model:sort="sort.cat.name"
+            />
+          </template>
+        </Column>
+        <Column class="w-[350px]">
+          <template #header>
+            <app-header-column
+              type="date"
+              title="Дата создания"
+              field="created_date"
+              v-model:filter="filter.cat.created_date"
+              v-model:sort="sort.cat.created_date"
+            />
+          </template>
+          <template #body="{ data }">
+            {{ moment(data.created_date).format('YYYY.MM.DD HH:mm:ss') }}
+          </template>
+        </Column>
+      </DataTable>
+    </div>
+    <div ref="blockPagination">
+      <Paginator
+        :rows="storeCategories.limit"
+        :totalRecords="storeCategories.count"
+        ref="pagination"
+        @click="setPaginaion"
+      />
     </div>
   </div>
 </template>
 
 <script lang="ts" setup>
-import type {
-  DynamicDialogOptions
-} from 'primevue/dynamicdialogoptions/DynamicDialogOptions'
+import type { DynamicDialogOptions } from 'primevue/dynamicdialogoptions/DynamicDialogOptions'
 import type { PageState } from 'primevue/paginator/Paginator'
 import type { TitleBlock } from '~/types/Form'
 import moment from 'moment'

@@ -1,12 +1,34 @@
 <template>
   <div class="min-w-screen h-screen max-h-screen select-none">
     <div class="h-full w-full flex flex-col lg:flex-row">
-      <LazyMegaMenu :model="items" orientation="vertical" class="bg-zinc-50 shadow-xl surface-0" v-if="isLoading">
-        <template #start>
-          <!-- Пользователь -->
+      <div class="flex flex-col w-[300px] menu">
+        <template v-for="item in items">
+          <NuxtLink :to="item.url" v-if="!item.list" class="p-1 pl-3 lnk m-[1px]" :class="item.class">{{
+            item.label
+          }}</NuxtLink>
+          <template v-if="item.list">
+            <div
+              class="p-1 pl-3 w-full flex justify-between pr-3 lnk items-center"
+              @click="item.isVisible = !item.isVisible"
+            >
+              <span>{{ item.label }}</span>
+              <i class="pi" :class="{ 'pi-chevron-down': !item.isVisible, 'pi-chevron-up': item.isVisible }" />
+            </div>
+
+            <NuxtLink
+              v-for="subItem in item.list"
+              v-if="item.isVisible"
+              :to="subItem.url"
+              class="p-1 pl-5 lnk w-full m-1"
+              :class="subItem.class"
+              >{{ subItem.label }}</NuxtLink
+            >
+          </template>
         </template>
-      </LazyMegaMenu>
+      </div>
+      <div class="w-full h-full max-h-full shadow-xl surface-0 p-1">
       <nuxtPage />
+      </div>
     </div>
   </div>
   <app-toast />
@@ -20,76 +42,92 @@ import type { RouteLocationNormalizedLoaded } from 'vue-router'
 const isLoading = ref<boolean>(false)
 const route: RouteLocationNormalizedLoaded = useRoute() // Получение значения роута
 
-const items: Ref<Item[]> = ref([
+const items = ref<Item[]>([
   {
-    label: 'Статистика', url: '/',
+    label: 'Статистика',
+    url: '/',
   },
   {
-    label: 'Группы', url: '/groups',
+    label: 'Группы',
+    url: '/groups',
   },
   {
-    label: 'Категории', url: '/categories'
+    label: 'Категории',
+    url: '/categories',
   },
   {
-    label: 'Сервисы', url: '/services'
-  }
+    label: 'Сервисы',
+    url: '/services',
+  },
+  {
+    label: 'Офферы',
+    url: '/offers',
+  },
+  {
+    label: 'Справочники',
+    list: [{ label: 'Способ получения денег', url: '/method_get_money' }],
+  },
 ]) // Список меню
 
-onMounted(() => {
-  /** Установка класса активной ссылки */
+/**
+ ** Выделение активного пункта меню
+ * @function useMenu
+ */
+const useMenu = () => {
+  /* Сброс классов */
   items.value.forEach((el: Item, index: number) => {
-    if(el.url === route.path) {
-      items.value[index].class = 'p-menuitem-active'
+    el.class = ''
+    // Перебор всех элементов меню
+    if (el.list) {
+      el.list.forEach((item, subIndex: number) => {
+        item.class = ''
+      })
     }
   })
+
+  items.value.forEach((el: Item, index: number) => {
+    // Перебор всех элементов меню
+    if (el.list) {
+      el.list.forEach((item, subIndex: number) => {
+        // перебор всех подменю
+        if (item.url === route.path) {
+          items.value[index].isVisible = true // отображать выпадающий список
+          const list = items.value[index].list // Список подменю
+          if (list && list.length) {
+            list[subIndex].class = 'active' // Добавление класса активного пункта меню
+          }
+        }
+      })
+    }
+    if (el.url === route.path) {
+      items.value[index].class = 'active'
+    }
+  })
+}
+
+onMounted(() => {
+  useMenu()
   isLoading.value = true
 })
+
+watch(
+  () => route.path,
+  () => {
+    useMenu()
+  },
+)
 </script>
 
 <style>
-@media (min-width: 960px) {
-  .p-megamenu-vertical {
-    width: 350px
-  }
+.lnk.active {
+  background-color: #16a34a;
+  border-radius: 7px;
+  color: white;
 }
 
-.p-menuitem {
-  min-height: 40px;
-  display: flex;
-  width: 100%;
-  align-items: center;
-
+.lnk:hover {
+  background: #22c55e;
+  border-radius: 7px;
+  color: #f9fafb;
 }
-
-.p-menuitem-active {
-  background: var(--green-600);
-  border-radius: 6px;
-}
-
-.p-menuitem-active .p-menuitem-text{
-  color: white
-}
-
-.p-menuitem-content {
-  width: 100%;
-  height: 100%;
-  margin: 0px;
-  padding: 0px;
-}
-
-.p-menuitem-link {
-  width: 100%;
-  height: 30px;
-  margin: 4px;
-}
-
-.p-menuitem-content:hover {
-  background: var(--green-300);
-  border-radius: 6px;
-  
-}
-
-.p-menuitem-link:hover .p-menuitem-text {
-  
-}
-</style>~/types/Menu
+</style>

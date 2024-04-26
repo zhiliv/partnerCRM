@@ -18,17 +18,23 @@ export const getLimit = (limit: number, offset: number) => {
  * @return {String}
  */
 export const getSort = (sort: any) => {
-  const sorted = JSON.parse(sort)
+  const sorted = JSON.parse(sort) // Получение значения сортировки
   const asc: string[] = [] // Массив полей в восходящем порядке(от меньшего к большему)
   const desc: string[] = [] // Массив полей для сортировки в нисходящем порядке(от большего к меньшему)
 
-  const keys = Object.keys(sorted) // Получение ключей сортировки
+  const keys = Object.keys(sorted) // Получение имен таблиц сортировки
 
   keys.forEach((key: string) => {
-    if(sorted[key]) {
-      if(sorted[key] === 'asc') asc.push(key)
-      if(sorted[key] === 'desc') desc.push(key)
-    }
+    const features = Object.keys(sorted[key]) // Получение полей сортировки
+    
+    features.forEach((field: string) => {
+      if(sorted[key][field]) {
+        if(sorted[key][field] === 'asc') asc.push(`${key}.${field}`)
+        if(sorted[key][field] === 'desc') desc.push(`${key}.${field}`)
+      }      
+    })
+    
+
   })
 
   const result = ` 
@@ -36,6 +42,8 @@ export const getSort = (sort: any) => {
 
   const stringASC = asc.length > 0 ? ` ${asc.join(', ')} ASC` : ''
   const stringDESC = desc.length > 0 ? ` ${desc.join(', ')} DESC` : ''
+
+  
   return stringASC || stringDESC ? `${result} 
     ${stringASC.length && stringDESC.length ? `${stringASC}, ${stringDESC}` : stringASC || stringDESC}` : ''
 }

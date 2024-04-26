@@ -9,6 +9,8 @@
 export interface Item {
   label: string
   icon?: string
-  url: string
+  url?: string
   class?: string
+  isVisible?: boolean
+  list?: Item[]
 }

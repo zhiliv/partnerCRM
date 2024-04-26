@@ -1,6 +1,6 @@
 import type { H3Event } from 'h3'
 import type { ResponseHTTP } from '~/types/ResponseHTTP'
-import type { Group } from '~/types/Group'
+import type { FieldsCategory } from '~/types/Category'
 import type { QueryResult } from 'pg'
 import { db } from '~/server/db'
 
@@ -10,11 +10,11 @@ export default defineEventHandler(async (event: H3Event) => {
     message: 'Категория удалена',
     data: null
   }
-  const params: Group = await readBody(event) // Параметры запроса
+  const params: FieldsCategory = await readBody(event) // Параметры запроса
   if(!params || !params.id) {
     response.message = 'Не передан идентификатор Группы'
     response.statusCode = 500
-    throw createError(response)
+    return response
   }
 
   const id: number = params.id // Получение идентификатора
@@ -24,12 +24,12 @@ export default defineEventHandler(async (event: H3Event) => {
     if(!result) {
       response.message = 'Непредвиденная ошибка при удалении категории'
       response.statusCode = 500
-      throw createError(response)
+      return response
     }
     if(result.rowCount === 0) {
       response.message = 'Категория не найдена'
       response.statusCode = 400
-      throw createError(response)
+      return response
     }
   }
   catch(err: any) {

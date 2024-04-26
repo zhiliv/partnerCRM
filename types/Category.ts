@@ -1,5 +1,5 @@
 import type { TimeStamp } from './Time'
-import type {  Sort } from './Filter'
+import type { Sort } from './Filter'
 
 /** 
 ** Описание интерфейса для полей категории

@@ -118,8 +118,8 @@ const clear = () => {
 * @function sorted
 */
 const sorted = () => {
-  if(sort.value === null) sort.value = 'asc'
-  else if(sort.value === 'asc') sort.value = 'desc'
+  if(sort.value === null) sort.value = 'desc'
+  else if(sort.value === 'asc') sort.value = 'asc'
   else sort.value = null
   emit('update:sort', sort.value ) // Отправка события 
 }

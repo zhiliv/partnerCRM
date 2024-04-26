@@ -1,24 +1,24 @@
 import type { H3Event } from 'h3'
 import type { ResponseHTTP } from '~/types/ResponseHTTP'
-import type { FieldsGroup } from '~/types/Group'
+import type { FieldsService } from '~/types/Service'
 import { db } from '~/server/db'
 import { QueryArrayResult, QueryResult } from 'pg'
 
 export default defineEventHandler(async (event: H3Event) => {
-  const params: FieldsGroup = await getQuery(event) // Получение параметров запроса
-  
+  const params: FieldsService = await getQuery(event) // Получение параметров запроса
+
   const response: ResponseHTTP = {
     statusCode: 200,
     message: 'Сервис получен успешно',
     data: null
   } // Параметры ответа
-  
-  if(!params || !params.id){
+
+  if(!params || !params.id) {
     response.statusCode = 500
     response.message = 'Не передан идентификатор сервиса'
-    throw createError(response)
+    return response
   }
-  
+
   const sql: string = `
     SELECT
       serv.id as id,
@@ -43,22 +43,22 @@ export default defineEventHandler(async (event: H3Event) => {
     WHERE serv.id = $1 
     GROUP BY serv.id, g.id
     `
-    
-    try{
-      const result: QueryArrayResult = await db.query(sql, [params.id])
-      if(!result) {
-        response.statusCode = 500
-        response.message = 'Непредвиденная ошибка при получении сервиса'
-        throw createError(response)
-      }
-      
-      const rows: FieldsGroup[][] = result.rows // Получение строк ответа
-      response.data = rows[0]
-    }
-    catch(err: any){
+
+  try {
+    const result: QueryArrayResult = await db.query(sql, [params.id])
+    if(!result) {
       response.statusCode = 500
-      response.message = err.toString()
-      throw createError(response)
+      response.message = 'Непредвиденная ошибка при получении сервиса'
+      return response
     }
+
+    const rows: FieldsService[][] = result.rows // Получение строк ответа
+    response.data = rows[0]
+  }
+  catch(err: any) {
+    response.statusCode = 500
+    response.message = err.toString()
+    return response
+  }
   return response
 })

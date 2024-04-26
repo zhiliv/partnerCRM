@@ -7,7 +7,6 @@ import { FieldsCategory } from '~/types/Category'
 
 export default defineEventHandler(async (event: H3Event) => {
   const params = await readBody(event) // Параметры запроса
-  console.log("🚀 -> defineEventHandler -> params:", params)
   const response: ResponseHTTP = {
     statusCode: 200,
     message: 'Запись обновлена успешно',
@@ -17,7 +16,7 @@ export default defineEventHandler(async (event: H3Event) => {
   if(!params) {
     response.statusCode = 500
     response.message = 'Оши бка при получении параметров для обновления сервиса'
-    throw createError(response)
+    return response
   }
 
   try {
@@ -42,7 +41,7 @@ export default defineEventHandler(async (event: H3Event) => {
     if(!result) {
       response.statusCode = 500
       response.message = 'Непредвиденная ошибка при обновлении сервиса'
-      throw createError(response)
+      return response
     }
   }
   catch(err: any) {

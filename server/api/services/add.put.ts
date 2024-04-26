@@ -15,7 +15,7 @@ export default defineEventHandler(async (event: H3Event) => {
   if(!params) {
     response.statusCode = 500
     response.message = 'Ошибка при получении параметров для создания нового сервиса'
-    throw createError(response)
+    return response
   }
   try {
     await db.query('BEGIN') // Начало транзакции
@@ -29,7 +29,7 @@ export default defineEventHandler(async (event: H3Event) => {
     if(!result) {
       response.statusCode = 500
       response.message = 'Непредвиденная ошибка при создания сервиса'
-      throw createError(response)
+      return response
     }
 
     const id = result.rows[0].id // Получение идентификатора новой записи
@@ -43,7 +43,7 @@ export default defineEventHandler(async (event: H3Event) => {
     if(!result_category) {
       response.statusCode = 500
       response.message = 'Непредвиденная ошибка при создании сервиса'
-      throw createError(response)
+      return response
     }
     await db.query('COMMIT')
 

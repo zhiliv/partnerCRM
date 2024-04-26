@@ -1,11 +1,11 @@
 import type { H3Event } from 'h3'
 import type { ResponseHTTP } from '~/types/ResponseHTTP'
-import type { Group } from '~/types/Group'
+import type { FieldsGroup } from '~/types/Group'
 import { db } from '~/server/db'
 import { QueryArrayResult, QueryResult } from 'pg'
 
 export default defineEventHandler(async (event: H3Event) => {
-  const params: Group = await getQuery(event) // Получение параметров запроса
+  const params: FieldsGroup = await getQuery(event) // Получение параметров запроса
   
   const response: ResponseHTTP = {
     statusCode: 200,
@@ -16,7 +16,7 @@ export default defineEventHandler(async (event: H3Event) => {
   if(!params || !params.id){
     response.statusCode = 500
     response.message = 'Не передан идентификатор Группы'
-    throw createError(response)
+    return response
   }
   
   const sql: string = `
@@ -34,7 +34,7 @@ export default defineEventHandler(async (event: H3Event) => {
       if(!result) {
         response.statusCode = 500
         response.message = 'Непредвиденная ошибка при получении Группы'
-        throw createError(response)
+        return response
       }
       
       const rows: Group[][] = result.rows // Получение строк ответа
@@ -43,7 +43,7 @@ export default defineEventHandler(async (event: H3Event) => {
     catch(err: any){
       response.statusCode = 500
       response.message = err.toString()
-      throw createError(response)
+      return response
     }
   return response
 })

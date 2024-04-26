@@ -1,5 +1,4 @@
 <template>
-  <div class="w-full h-full max-h-full shadow-xl surface-0 p-1">
     <div class="border-b border-l border-r pl-2 pt-2 shadow-xl surface-0 bg-blue-50" id="title" ref="titleBlock">
       <h5>Группы</h5>
     </div>
@@ -70,7 +69,6 @@
         <Paginator :rows="storeGroups.limit" :totalRecords="storeGroups.count" ref="pagination" @click="setPaginaion" />
       </div>
     </div>
-  </div>
 </template>
 
 <script lang="ts" setup>

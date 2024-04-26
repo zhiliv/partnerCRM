@@ -27,8 +27,9 @@ export const useStoreServices = defineStore('services', () => {
       const response: ResponseHTTP = await $fetch(url, {
         params: { limit: limit.value, offset: offset.value, filter: filter.value, sort: sort.value },
       }) // Получение списка с сервера1`
+      console.log('response', response)
       const checkResponse: boolean = progressingResponse(response) // Проверка на успешное выполнение
-      if(checkResponse){
+      if(checkResponse) {
         list.value = response.data // Установка списка
         isLoading.value = false // Статус загрузки
         return true
@@ -49,11 +50,11 @@ export const useStoreServices = defineStore('services', () => {
     // await getCount()
     const url: string = `/api/services/count` // Ссылка для получения количества записей
     try {
-      const response: ResponseHTTP = await $fetch(url, {params: {limit: limit.value, offset: offset.value, filter: filter.value, sort: sort.value}}) // Получение количества с сервера
-      const checkResponse: boolean  = await progressingResponse(response)
-      if(checkResponse){
+      const response: ResponseHTTP = await $fetch(url, { params: { limit: limit.value, offset: offset.value, filter: filter.value, sort: sort.value } }) // Получение количества с сервера
+      const checkResponse: boolean = await progressingResponse(response)
+      if(checkResponse) {
         count.value = +response.data
-        isLoading.value = false  
+        isLoading.value = false
         return true
       }
     }
@@ -103,8 +104,8 @@ export const useStoreServices = defineStore('services', () => {
     }
     return false
   }
-  
-  
+
+
   /** 
   ** Обновление записи
   * @function update
@@ -121,7 +122,7 @@ export const useStoreServices = defineStore('services', () => {
     }
     return false
   }
-  
+
   /** 
   ** Удаление записи
   * @function del
@@ -136,9 +137,9 @@ export const useStoreServices = defineStore('services', () => {
     catch(err: any) {
       showToast({ message: err, type: 'error' })
     }
-    
+
     return false
   }
-  
+
   return { getList, getCount, count, list, limit, offset, create, isLoading, get, record, update, del, sort, filter }
 })

@@ -20,13 +20,13 @@
         <label for="category">Категория</label>
         <div class="flex justify-between">
           <Listbox :options="listCategories" optionLabel="name" class="w-[calc(100%-130px)] h-[160px] overflow-y-auto">
-              <template #option="slotProps">
-                <div class="flex align-items-center p-0">
-                  <Checkbox id="category" v-model="record.categories" :value="slotProps.option"  />
-                  <label class="text-filter text-[14px] pl-1">{{ slotProps.option.name }}</label>
-                </div>
-              </template>
-            </Listbox>
+            <template #option="slotProps">
+              <div class="flex align-items-center p-0">
+                <Checkbox id="category" v-model="record.categories" :value="slotProps.option" />
+                <label class="text-filter text-[14px] pl-1">{{ slotProps.option.name }}</label>
+              </div>
+            </template>
+          </Listbox>
           <Button severity="success" label="Создать" class="p-2 w-[120px] h-[40px]" @click="onCreateCategory" />
         </div>
       </div>
@@ -35,9 +35,8 @@
       </div>
       <div class="max-h-[20%] overflow-y-auto" v-if="record.categories.length">
         <div>
-        <Chip :label="category.name" v-for="category in record.categories" class="ml-1 mt-1" />  
+          <Chip :label="category.name" v-for="category in record.categories" class="ml-1 mt-1" />
         </div>
-        
       </div>
     </div>
     <div class="pt-4 w-full justify-between flex border-t" v-if="isTypeModal === 'create'">
@@ -68,9 +67,7 @@
 <script setup lang="ts">
 import type { FieldsService } from '~/types/Service'
 import type { FieldsCategory } from '~/types/Category'
-import type {
-  DynamicDialogOptions
-} from 'primevue/dynamicdialogoptions/DynamicDialogOptions'
+import type { DynamicDialogOptions } from 'primevue/dynamicdialogoptions/DynamicDialogOptions'
 import { useStoreServices } from '~/stores/services.store'
 import { useStoreGroups } from '~/stores/groups.store'
 import { useStoreCategories } from '~/stores/categories.store'
@@ -87,7 +84,6 @@ storeCategories.limit = 0 // Установка лимита
 await storeCategories.getList() // Получени списка категорий
 const listCategories = computed(() => storeCategories.list.map((el: any) => ({ id: el.id, name: el.name })))
 
-
 const dialogRef: any = inject('dialogRef') // Ссылка на диалоговое окно
 const isTypeModal: Ref<'create' | 'edit' | null> = ref(null) // Тип формы(создание\редактирование)
 const record = reactive<FieldsService>({
@@ -96,7 +92,7 @@ const record = reactive<FieldsService>({
   id_category: [],
   add_categories_id: [],
   del_categories_id: [],
-  categories: []
+  categories: [],
 }) // Данные записи
 const isChanged: Ref<boolean> = ref(false) // Признак изменений записи
 
@@ -105,7 +101,8 @@ watch(
   () => record.categories,
   (newVal: any) => {
     const ids: number[] = newVal.map((item: FieldsCategory) => item.id) // Все выбранные идентификаторы категорий
-    if (isTypeModal.value === 'create') {// При создании новой записи
+    if (isTypeModal.value === 'create') {
+      // При создании новой записи
       record.add_categories_id = ids // Установка массива идентификатора категорий
     }
   },
@@ -158,7 +155,6 @@ const close = () => {
 }
 
 onMounted(async () => {
-  
   isTypeModal.value = dialogRef.value.data.type // Установка типа формы
 
   if (isTypeModal.value === 'edit') {
@@ -167,23 +163,29 @@ onMounted(async () => {
     record.id = storeServices.record.id // Присвоение идентификатора
     record.name = storeServices.record.name // Присвоение имени
     record.id_group = storeServices.record.id_group // Присвоение идентификатора группы
-    record.categories = storeServices.record.categories.filter((item: FieldsCategory) => item.id !== null || item.name !== null || !item) // Присвоение категорий
+    record.categories = storeServices.record.categories.filter(
+      (item: FieldsCategory) => item.id !== null || item.name !== null || !item,
+    ) // Присвоение категорий
   }
 })
 
 watch(record, (newVal) => {
-  console.log("🚀 -> watch -> newVal:", newVal)
   isChanged.value = record.name !== storeServices.record.name
-  if(record.name && record.name !== storeServices.record.name){
+  if (record.name && record.name !== storeServices.record.name) {
     isChanged.value = true
-  }
-  else if(record.id_group && record.id_group !== storeServices.record.id_group){
+  } else if (record.id_group && record.id_group !== storeServices.record.id_group) {
     isChanged.value = true
-  }
-  else if(record.categories.length && JSON.stringify(record.categories) !== JSON.stringify(storeServices.record.categories.filter((item: FieldsCategory) => item.id !== null || item.name !== null || !item))){
+  } else if (
+    record.categories.length &&
+    JSON.stringify(record.categories) !==
+      JSON.stringify(
+        storeServices.record.categories.filter(
+          (item: FieldsCategory) => item.id !== null || item.name !== null || !item,
+        ),
+      )
+  ) {
     isChanged.value = true
-  }
-  else{
+  } else {
     isChanged.value = false
   }
 })

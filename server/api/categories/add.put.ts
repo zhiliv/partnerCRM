@@ -14,20 +14,29 @@ export default defineEventHandler(async (event: H3Event) => {
   if(!params) {
     response.statusCode = 500
     response.message = 'Ошибка при получении параметров для создания новой категории'
-    throw createError(response)
+    return response
   }
 
   const sql: string = `INSERT INTO base.categories(name) VALUES($1) RETURNING *`
-  const result: QueryResult = await db.query(sql, Object.values(params))
-  
-  if(!result) {
-    response.statusCode = 500
-    response.message = 'Непредвиденная ошибка при создании категории'
-    throw createError(response)
+  try{
+    const result: QueryResult = await db.query(sql, Object.values(params))
+
+    if(!result) {
+      response.statusCode = 500
+      response.message = 'Непредвиденная ошибка при создании категории'
+      return response
+    }
+
+    response.statusCode = 200
+    response.message = 'Категория создана успешно'
+    response.data = result.rows[0]  
+  }
+  catch(err: any){
+    response.statusCode = 400
+    response.message = `Непредвиденная ошибка при создании категории: ${err.toString()}`
+    return response
   }
   
-  response.statusCode = 200
-  response.message = 'Категория создана успешно'
-  response.data = result.rows[0]
+  
   return response
 })

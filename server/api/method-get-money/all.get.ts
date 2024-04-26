@@ -1,5 +1,5 @@
 import type { H3Event } from 'h3'
-import type { FieldsCategory } from '~/types/Category'
+import type { FieldsMethodGetMoney } from '~/types/Method_get_money'
 import type { QueryArrayResult } from 'pg'
 import type {ParamsQuery} from '~/types/ParamsQuery'
 import { db } from '~/server/db'
@@ -16,12 +16,12 @@ export default defineEventHandler(async (event: H3Event) => {
 
   const sql = `
     SELECT
-      cat.id,
-      cat.name,
-      cat.created_date,
-      cat.updated_date
+      mgm.id,
+      mgm.name,
+      mgm.created_date,
+      mgm.updated_date
     FROM 
-      base.categories as cat
+      "references".method_get_money as mgm
       ${getFilter(JSON.parse(params.filter))}
       ${Object.keys(JSON.parse(params.sort)).length > 0 ? getSort(params.sort) : ' ORDER BY id DESC '}
     ${getLimit(params.limit, params.offset)}
@@ -31,15 +31,15 @@ export default defineEventHandler(async (event: H3Event) => {
     const result: QueryArrayResult = await db.query(sql) // Выполнение запроса  
     if(!result) {
       response.statusCode = 400
-      response.message = `Непредвиденная ошибка получения списка категорий`
+      response.message = `Непредвиденная ошибка получения списка способов получения денег`
     }
 
-    const rows: FieldsCategory[][] = result.rows
+    const rows: FieldsMethodGetMoney[][] = result.rows
     response.data = rows
   }
   catch(err: any) {
     response.statusCode = 400
-    response.message = `Ошибка получения списка категорий в таблице categories: ${err.toString()}`
+    response.message = `Ошибка получения списка способов получения денег в таблице method_get_money: ${err.toString()}`
   }
   return response
 })

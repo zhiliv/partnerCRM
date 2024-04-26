@@ -1,5 +1,5 @@
 import type { H3Event } from 'h3'
-import type { Group } from '~/types/Group'
+import type { FieldsGroup } from '~/types/Group'
 import type { QueryArrayResult } from 'pg'
 import type {ParamsQuery} from '~/types/ParamsQuery'
 import { db } from '~/server/db'
@@ -35,7 +35,7 @@ export default defineEventHandler(async (event: H3Event) => {
       response.message = `Непредвиденная ошибка получения списка групп`
     }
 
-    const rows: Group[][] = result.rows
+    const rows: FieldsGroup[][] = result.rows
     response.data = rows
   }
   catch(err: any) {

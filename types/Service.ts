@@ -1,6 +1,7 @@
 import type { TimeStamp } from './Time'
-import type { Filter, Sort } from './Filter'
-import type { Category, FieldsCategory } from './Category'
+import type {  Sort } from './Filter'
+import type { FieldsCategory } from './Category'
+import type { FieldsGroup } from './Group'
 
 /**
  * @interface Service
@@ -42,6 +43,7 @@ export interface Service {
  */
 export interface FilterService {
   serv: FieldsService
+  g?: FieldsGroup
 }
 
 
