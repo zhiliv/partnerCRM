@@ -1,5 +1,5 @@
 import type { H3Event } from 'h3'
-import type { FieldsMethodGetMoney } from '~/types/Method_get_money'
+import type { FieldsDocument } from '~/types/Document'
 import type { QueryArrayResult } from 'pg'
 import type {ParamsQuery} from '~/types/ParamsQuery'
 import { db } from '~/server/db'
@@ -21,7 +21,7 @@ export default defineEventHandler(async (event: H3Event) => {
       doc.created_date,
       doc.updated_date
     FROM 
-      "references".documents as doc
+      base.documents as doc
       ${getFilter(JSON.parse(params.filter))}
       ${Object.keys(JSON.parse(params.sort)).length > 0 ? getSort(params.sort) : ' ORDER BY id DESC '}
     ${getLimit(params.limit, params.offset)}
@@ -34,7 +34,7 @@ export default defineEventHandler(async (event: H3Event) => {
       response.message = `Непредвиденная ошибка получения списка документов`
     }
 
-    const rows: FieldsMethodGetMoney[][] = result.rows
+    const rows: FieldsDocument[][] = result.rows
     response.data = rows
   }
   catch(err: any) {

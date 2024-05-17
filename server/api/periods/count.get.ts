@@ -1,12 +1,12 @@
 import type { H3Event } from 'h3'
 import type { QueryArrayResult, QueryResult } from 'pg'
-import type { ParamsGetGroups } from '~/types/Group'
+import type { ParamsGetPeriod } from '~/types/Period'
 import { db } from '~/server/db'
 import { getFilter, getSort, getLimit } from '~/server/utils/helper'
 
 
 export default defineEventHandler(async (event: H3Event) => {
-  const params: ParamsGetGroups = getQuery(event) // Получение параметров запроса
+  const params: ParamsGetPeriod = getQuery(event) // Получение параметров запроса
   const response = {
     statusCode: 200,
     message: 'Список периодов получен успешно',
@@ -17,7 +17,7 @@ export default defineEventHandler(async (event: H3Event) => {
     SELECT
       COUNT(*) as count
     FROM 
-      "references".periods
+      base.periods
     `
 
 

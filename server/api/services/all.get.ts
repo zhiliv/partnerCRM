@@ -38,7 +38,7 @@ export default defineEventHandler(async (event: H3Event) => {
       LEFT join base.categories c ON l.category_id = c.id
       LEFT join base.groups g ON g.id = serv.id_group
       ${getFilter(JSON.parse(params.filter))}
-      GROUP BY serv.id, g.id
+      GROUP BY serv.id, serv.name, serv.created_date , serv.updated_date,  g.id, g.name
       ${Object.keys(JSON.parse(params.sort)).length > 0 ? getSort(params.sort) : ' ORDER BY id DESC '}
       ${getLimit(params.limit, params.offset)}
   

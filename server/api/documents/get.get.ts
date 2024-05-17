@@ -9,7 +9,7 @@ export default defineEventHandler(async (event: H3Event) => {
   
   const response: ResponseHTTP = {
     statusCode: 200,
-    message: 'Категория получена успешно',
+    message: 'Документ получена успешно',
     data: null
   } // Параметры ответа
   
@@ -25,7 +25,7 @@ export default defineEventHandler(async (event: H3Event) => {
       name,
       created_date,
       updated_date
-    FROM "references".documents
+    FROM base.documents
     WHERE id = $1 
     `
     

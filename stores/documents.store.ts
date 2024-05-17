@@ -30,7 +30,7 @@ export const useStoreDocuments = defineStore('documents', () => {
   const getList = async (): Promise<boolean> => {
     await getCount() // Получение количества всех записей
     isLoading.value = true
-    // await getCount()
+    await getCount()
     const url: string = `/api/documents/all` // Ссылка для получения данных
     try {
       const response: ResponseHTTP = await $fetch(url, {
@@ -55,7 +55,6 @@ export const useStoreDocuments = defineStore('documents', () => {
   */
   const getCount = async (): Promise<boolean> => {
     isLoading.value = true // Статус загрузки
-    // await getCount()
     const url: string = `/api/documents/count` // Ссылка для получения количества записей
     try {
       const response: ResponseHTTP = await $fetch(url, { params: { limit: limit.value, offset: offset.value, filter: filter.value, sort: sort.value } }) // Получение количества с сервера

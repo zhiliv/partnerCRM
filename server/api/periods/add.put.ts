@@ -23,7 +23,7 @@ export default defineEventHandler(async (event: H3Event) => {
     mnozh: params.mnozh
   }
 
-  const sql: string = `INSERT INTO "references".periods(name, padez, mnozh) VALUES($1, $2, $3) RETURNING *`
+  const sql: string = `INSERT INTO base.periods(name, padez, mnozh) VALUES($1, $2, $3) RETURNING *`
   try{
     const result: QueryResult = await db.query(sql, Object.values(obj))
 

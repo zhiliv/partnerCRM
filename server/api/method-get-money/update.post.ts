@@ -22,7 +22,7 @@ export default defineEventHandler(async (event: H3Event) => {
   }
   
   try{
-    const sql: string = `UPDATE "references".method_get_money SET name = $2 WHERE id = $1 RETURNING *`
+    const sql: string = `UPDATE base.method_get_money SET name = $2 WHERE id = $1 RETURNING *`
     const result: QueryResult = await db.query(sql, Object.values(obj))
 
     if(!result) {

@@ -17,3 +17,15 @@ export interface FieldsMethodGetMoney {
 export interface MethodGetMoney{
   mgm: FieldsMethodGetMoney
 }
+
+/** 
+** Описание интерфейса параметров запроса для получения списка
+* @interface ParamsGetMethodGetMoney
+*/
+export interface ParamsGetMethodGetMoney {
+  limit?: number
+  offset?: number
+  order?: string
+  filter: MethodGetMoney
+  sort: MethodGetMoney
+}

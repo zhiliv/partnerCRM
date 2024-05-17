@@ -30,7 +30,7 @@ export const useStoreMethodGetMoney = defineStore('methodGetMoney', () => {
   const getList = async (): Promise<boolean> => {
     await getCount() // Получение количества всех записей
     isLoading.value = true
-    // await getCount()
+    await getCount()
     const url: string = `/api/method-get-money/all` // Ссылка для получения данных
     try {
       const response: ResponseHTTP = await $fetch(url, {
@@ -55,7 +55,6 @@ export const useStoreMethodGetMoney = defineStore('methodGetMoney', () => {
   */
   const getCount = async (): Promise<boolean> => {
     isLoading.value = true // Статус загрузки
-    // await getCount()
     const url: string = `/api/method-get-money/count` // Ссылка для получения количества записей
     try {
       const response: ResponseHTTP = await $fetch(url, { params: { limit: limit.value, offset: offset.value, filter: filter.value, sort: sort.value } }) // Получение количества с сервера

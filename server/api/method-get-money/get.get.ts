@@ -25,7 +25,7 @@ export default defineEventHandler(async (event: H3Event) => {
       name,
       created_date,
       updated_date
-    FROM "references".method_get_money
+    FROM base.method_get_money
     WHERE id = $1 
     `
     

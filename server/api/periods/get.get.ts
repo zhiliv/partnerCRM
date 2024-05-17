@@ -25,7 +25,7 @@ export default defineEventHandler(async (event: H3Event) => {
       name,
       padez,
       mnozh
-    FROM "references".periods
+    FROM base.periods
     WHERE id = $1 
     `
     

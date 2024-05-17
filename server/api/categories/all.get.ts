@@ -10,7 +10,7 @@ export default defineEventHandler(async (event: H3Event) => {
   const params: ParamsQuery = await getQuery(event) // Получение параметров запроса
   const response = {
     statusCode: 200,
-    message: 'Список групп получен успешно',
+    message: 'Список категорий получен успешно',
     data: <any>[]
   }
 

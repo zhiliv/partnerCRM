@@ -19,3 +19,15 @@ export interface FieldsPeriod{
 export interface Period{
   prd: FieldsPeriod
 }
+
+/** 
+** Описание интерфейса параметров запроса для получения списка
+* @interface ParamsGetPeriod
+*/
+export interface ParamsGetPeriod {
+  limit?: number
+  offset?: number
+  order?: string
+  filter: Category
+  sort: Category
+}

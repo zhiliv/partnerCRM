@@ -26,7 +26,7 @@ export default defineEventHandler(async (event: H3Event) => {
   }
 
   try {
-    const sql: string = `UPDATE "references".periods SET name = $2, padez = $3, mnozh = $4 WHERE id = $1 RETURNING *`
+    const sql: string = `UPDATE base.periods SET name = $2, padez = $3, mnozh = $4 WHERE id = $1 RETURNING *`
     const result: QueryResult = await db.query(sql, Object.values(obj))
 
     if(!result) {

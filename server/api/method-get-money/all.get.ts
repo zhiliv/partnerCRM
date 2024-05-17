@@ -10,7 +10,7 @@ export default defineEventHandler(async (event: H3Event) => {
   const params: ParamsQuery = await getQuery(event) // Получение параметров запроса
   const response = {
     statusCode: 200,
-    message: 'Список групп получен успешно',
+    message: 'Список способов получения денег получен успешно',
     data: <any>[]
   }
 
@@ -21,7 +21,7 @@ export default defineEventHandler(async (event: H3Event) => {
       mgm.created_date,
       mgm.updated_date
     FROM 
-      "references".method_get_money as mgm
+      base.method_get_money as mgm
       ${getFilter(JSON.parse(params.filter))}
       ${Object.keys(JSON.parse(params.sort)).length > 0 ? getSort(params.sort) : ' ORDER BY id DESC '}
     ${getLimit(params.limit, params.offset)}

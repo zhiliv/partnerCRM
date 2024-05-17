@@ -1,5 +1,5 @@
 import type { H3Event } from 'h3'
-import type { FieldsMethodGetMoney } from '~/types/Method_get_money'
+import type { FieldsPeriod } from '~/types/Period'
 import type { QueryArrayResult } from 'pg'
 import type {ParamsQuery} from '~/types/ParamsQuery'
 import { db } from '~/server/db'
@@ -21,7 +21,7 @@ export default defineEventHandler(async (event: H3Event) => {
       prd.padez,
       prd.mnozh
     FROM 
-      "references".periods as prd
+      base.periods as prd
       ${getFilter(JSON.parse(params.filter))}
       ${Object.keys(JSON.parse(params.sort)).length > 0 ? getSort(params.sort) : ' ORDER BY id DESC '}
     ${getLimit(params.limit, params.offset)}
@@ -34,7 +34,7 @@ export default defineEventHandler(async (event: H3Event) => {
       response.message = `Непредвиденная ошибка получения списка периодов`
     }
 
-    const rows: FieldsMethodGetMoney[][] = result.rows
+    const rows: FieldsPeriod[][] = result.rows
     response.data = rows
   }
   catch(err: any) {

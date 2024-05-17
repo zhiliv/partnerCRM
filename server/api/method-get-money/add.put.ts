@@ -18,7 +18,7 @@ export default defineEventHandler(async (event: H3Event) => {
   }
 
   try{
-    const sql: string = `INSERT INTO "references".method_get_money(name) VALUES($1) RETURNING *`
+    const sql: string = `INSERT INTO base.method_get_money(name) VALUES($1) RETURNING *`
     const result: QueryResult = await db.query(sql, Object.values(params))
 
     if(!result) {

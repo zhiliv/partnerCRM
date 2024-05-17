@@ -48,6 +48,10 @@ const items = ref<Item[]>([
     url: '/',
   },
   {
+    label: 'Дополнительные поля',
+    url: '/fields',
+  },
+  {
     label: 'Группы',
     url: '/groups',
   },
@@ -58,6 +62,14 @@ const items = ref<Item[]>([
   {
     label: 'Сервисы',
     url: '/services',
+  },
+  {
+    label: 'Партнерские программы',
+    url: '/cpas',
+  },
+  {
+    label: 'Организации',
+    url: '/organizations',
   },
   {
     label: 'Офферы',

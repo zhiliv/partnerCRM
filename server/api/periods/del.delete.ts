@@ -18,7 +18,7 @@ export default defineEventHandler(async (event: H3Event) => {
   }
 
   const id: number = params.id // Получение идентификатора
-  const sql: string = `DELETE FROM "references".periods  WHERE id = $1`
+  const sql: string = `DELETE FROM base.periods  WHERE id = $1`
   try {
     const result: QueryResult = await db.query(sql, [id])
     if(!result) {

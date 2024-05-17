@@ -17,7 +17,7 @@ export default defineEventHandler(async (event: H3Event) => {
     return response
   }
 
-  const sql: string = `INSERT INTO "references".documents(name) VALUES($1) RETURNING *`
+  const sql: string = `INSERT INTO base.documents(name) VALUES($1) RETURNING *`
   try{
     const result: QueryResult = await db.query(sql, Object.values(params))
 

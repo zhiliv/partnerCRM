@@ -1,7 +1,7 @@
 import { TimeStamp } from './Time'
 
 /** 
-* @interface TypeDoc
+* @interface FieldsDocument
 * @member {Number} id - Идентификатор
 * @member {String} name - Наименование
 * @member {String} created_date - Дата создания
@@ -17,4 +17,16 @@ export interface FieldsDocument {
 export interface Document {
 
   doc: FieldsDocument
+}
+
+/** 
+** Описание интерфейса параметров запроса для получения списка
+* @interface ParamsGetDocument
+*/
+export interface ParamsGetDocument {
+  limit?: number
+  offset?: number
+  order?: string
+  filter: Document
+  sort: Document
 }
