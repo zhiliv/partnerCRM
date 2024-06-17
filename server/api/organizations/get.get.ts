@@ -23,6 +23,7 @@ export default defineEventHandler(async (event: H3Event) => {
     SELECT 
       id,
       name,
+      service_id,
       information,
       images,
       created_date,

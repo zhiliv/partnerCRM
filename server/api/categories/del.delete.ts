@@ -12,7 +12,7 @@ export default defineEventHandler(async (event: H3Event) => {
   }
   const params: FieldsCategory = await readBody(event) // Параметры запроса
   if(!params || !params.id) {
-    response.message = 'Не передан идентификатор Группы'
+    response.message = 'Не передан идентификатор категории'
     response.statusCode = 500
     return response
   }

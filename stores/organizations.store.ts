@@ -18,7 +18,7 @@ export const useStoreOrganizations = defineStore('organizations', () => {
   const isLoading = ref<boolean>(true) // Статус загрузки данных
   const limit = ref<number>(50) // Лимит выбора строк
   const offset = ref<number>(0) // Сдвиг поиска
-  const record = ref<FieldsOrganization>({}) // Запись
+  const record = ref<FieldsOrganization>({name: null, information: []}) // Запись
   const filter = ref<Organization | any>({}) // Фильтры
 
   /** 
@@ -76,6 +76,7 @@ export const useStoreOrganizations = defineStore('organizations', () => {
   const create = async (): Promise<boolean> => {
     const url: string = `/api/organizations/add` // Ссылка 
     try {
+      console.log(record)
       const response: ResponseHTTP = await $fetch(url, { method: 'put', body: record.value }) // Получение количества с сервера
       progressingResponse(response, true)
       return true
@@ -100,6 +101,7 @@ export const useStoreOrganizations = defineStore('organizations', () => {
     const url: string = `/api/organizations/get` // Ссылка
     try {
       const response: ResponseHTTP = await $fetch(url, { params: { id } })
+      console.log("🚀 -> get -> response:", response)
       await progressingResponse(response)
       record.value = response.data // Установка значения Группы
       return true

@@ -5,6 +5,7 @@ import { QueryResult } from 'pg'
 
 export default defineEventHandler(async (event: H3Event) => {
   const params = await readBody(event) // Параметры запроса
+  console.log("🚀 -> defineEventHandler -> params:", params)
   const response: ResponseHTTP = {
     statusCode: 200,
     message: 'Запись добавлена успешно',
@@ -17,9 +18,9 @@ export default defineEventHandler(async (event: H3Event) => {
     return response
   }
 
-  const sql: string = `INSERT INTO base.organizations(name) VALUES($1) RETURNING *`
+  const sql: string = `INSERT INTO base.organizations(name, information, images, service_id) VALUES($1, $2, $3, $4) RETURNING *`
   try{
-    const result: QueryResult = await db.query(sql, Object.values(params))
+    const result: QueryResult = await db.query(sql, [params.name, JSON.stringify(params.information), JSON.stringify(params.images), params.service_id])
 
     if(!result) {
       response.statusCode = 500

@@ -21,11 +21,13 @@ export default defineEventHandler(async (event: H3Event) => {
   
   const sql: string = `
     SELECT 
-      id,
-      name,
-      created_date,
-      updated_date
-    FROM base.categories 
+      fld.id,
+      fld.table,
+      fld.values -> 'name' as name,
+      fld.values -> 'label' as label,
+      fld.values -> 'description' as description,
+      fld.values -> 'type' as type
+    FROM service.fields as fld
     WHERE id = $1 
     `
     

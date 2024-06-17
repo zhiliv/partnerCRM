@@ -1,5 +1,7 @@
 // import whitelist from './modules/whitelist/result-whitelist.json'
-import path from 'path'
+import { createRequire } from "node:module";
+const require = createRequire(import.meta.url);
+
 
 export default defineNuxtConfig({
   devServer: {
@@ -64,8 +66,26 @@ export default defineNuxtConfig({
     'nuxt-icons',
     '@pinia/nuxt',
     '@nuxt/image',
-    "nuxt-delay-hydration"
+    'nuxt-delay-hydration',
+    ['@nuxtjs/google-fonts', {
+      families: {
+        Roboto: true,
+        Inter: [400, 700],
+        'Josefin+Sans': true,
+        Lato: [100, 300],
+        Raleway: {
+          wght: [100, 400],
+          ital: [100]
+        },
+        Inter: '200..700',
+        'Crimson Pro': {
+          wght: '200..900',
+          ital: '200..700',
+        }
+      }
+    }],
   ],
+
 
   delayHydration: {
     // enables nuxt-delay-hydration in dev mode for testing
@@ -126,4 +146,6 @@ export default defineNuxtConfig({
       enabled: true,
     },
   },
+
+
 });

@@ -26,6 +26,7 @@ export interface FieldsService{
   del_categories_id?: number[]
   categories_text?: string | null
   group_text?: string | null
+  domain?: string | null
 }
 
 export interface Service {

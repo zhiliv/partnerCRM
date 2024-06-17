@@ -18,6 +18,7 @@ export interface FieldsOrganization {
   name?: string | null
   information?: any
   images?: any
+  service_id: number | null
 }
 
 /**

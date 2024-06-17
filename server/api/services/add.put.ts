@@ -21,9 +21,10 @@ export default defineEventHandler(async (event: H3Event) => {
     await db.query('BEGIN') // Начало транзакции
     const item = {
       name: params.name,
-      id_group: params.id_group
+      id_group: params.id_group,
+      domain: params.domain
     } // Параметры для создания объекта
-    const sql: string = `INSERT INTO base.services(name, id_group) VALUES($1, $2) RETURNING *`
+    const sql: string = `INSERT INTO base.services(name, id_group, domain) VALUES($1, $2, $3) RETURNING *`
     const result: QueryResult = await db.query(sql, Object.values(item))
 
     if(!result) {

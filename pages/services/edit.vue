@@ -3,6 +3,8 @@
     <div class="w-full h-[91%]">
       <label for="name">Наименование сервиса</label>
       <InputText id="name" type="text" v-model="record.name" class="w-full" :invalid="isValid" />
+      <label for="name">Домен</label>
+      <InputText id="domain" type="text" v-model="record.domain" class="w-full" :invalid="isValidDomain" />
       <div class="pt-2" v-if="record.name">
         <label for="group">Группа</label>
         <div class="flex justify-between">
@@ -93,6 +95,7 @@ const record = reactive<FieldsService>({
   add_categories_id: [],
   del_categories_id: [],
   categories: [],
+  domain: null
 }) // Данные записи
 const isChanged: Ref<boolean> = ref(false) // Признак изменений записи
 
@@ -114,6 +117,12 @@ watch(
  */
 const isValid: ComputedRef<boolean> = computed(() => !record || !record.name || record.name.length <= 3)
 
+/**
+ ** Вычисление валидности поля "Домен"
+ * @function isValidDomain
+ */
+const isValidDomain: ComputedRef<boolean> = computed(() => !record || !record.domain || record.domain.length <= 3)  
+  
 /**
  ** Отправка данных для создания записи
  * @function create
@@ -162,6 +171,7 @@ onMounted(async () => {
     await storeServices.get()
     record.id = storeServices.record.id // Присвоение идентификатора
     record.name = storeServices.record.name // Присвоение имени
+    record.domain = storeServices.record.domain // Присвоение имени
     record.id_group = storeServices.record.id_group // Присвоение идентификатора группы
     record.categories = storeServices.record.categories.filter(
       (item: FieldsCategory) => item.id !== null || item.name !== null || !item,
@@ -173,7 +183,11 @@ watch(record, (newVal) => {
   isChanged.value = record.name !== storeServices.record.name
   if (record.name && record.name !== storeServices.record.name) {
     isChanged.value = true
-  } else if (record.id_group && record.id_group !== storeServices.record.id_group) {
+  } 
+  else if (record.domain && record.domain !== storeServices.record.domain) {
+    isChanged.value = true
+  }
+  else if (record.id_group && record.id_group !== storeServices.record.id_group) {
     isChanged.value = true
   } else if (
     record.categories.length &&

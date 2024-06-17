@@ -12,28 +12,28 @@ export default defineEventHandler(async (event: H3Event) => {
   }
   const params: FieldsCategory = await readBody(event) // Параметры запроса
   if(!params || !params.id) {
-    response.message = 'Не передан идентификатор Группы'
+    response.message = 'Не передан идентификатор дополнительного поля'
     response.statusCode = 500
     return response
   }
 
   const id: number = params.id // Получение идентификатора
-  const sql: string = `DELETE FROM base.categories  WHERE id = $1`
+  const sql: string = `DELETE FROM service.fields  WHERE id = $1`
   try {
     const result: QueryResult = await db.query(sql, [id])
     if(!result) {
-      response.message = 'Непредвиденная ошибка при удалении категории'
+      response.message = 'Непредвиденная ошибка при удалении дополнительного поля'
       response.statusCode = 500
       return response
     }
     if(result.rowCount === 0) {
-      response.message = 'Категория не найдена'
+      response.message = 'Дополнительное поле не найдено'
       response.statusCode = 400
       return response
     }
   }
   catch(err: any) {
-    response.message = `Ошибка при удалении категории: ${err.message}`
+    response.message = `Ошибка при удалении поля: ${err.message}`
     response.statusCode = 400
   }
 

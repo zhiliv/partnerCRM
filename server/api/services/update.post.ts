@@ -23,7 +23,8 @@ export default defineEventHandler(async (event: H3Event) => {
     const options = {
       id: params.id,
       name: params.name,
-      id_group: params.id_group
+      id_group: params.id_group,
+      domain: params.domain
     }
     await db.query('BEGIN') // Начало транзакции
     const del_sql = 'DELETE FROM base.link_service_category WHERE service_id = $1' // Запрос на удаление данных
@@ -34,7 +35,7 @@ export default defineEventHandler(async (event: H3Event) => {
     const add_query = format(add_sql, values) // Формирование запроса
     await db.query(add_query)
 
-    const sql: string = `UPDATE base.services SET name = $2, id_group = $3 WHERE id = $1 RETURNING *`
+    const sql: string = `UPDATE base.services SET name = $2, id_group = $3, domain = $4 WHERE id = $1 RETURNING *`
     const result: QueryResult = await db.query(sql, Object.values(options))
 
     await db.query('COMMIT')

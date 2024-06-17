@@ -212,7 +212,7 @@ const onEdit = async (): Promise<void> => {
       position: 'right',
       style: {
         height: '100%',
-        width: '30%',
+        width: '40%',
       },
       breakpoints: {
         '960px': '75vw',
@@ -278,4 +278,5 @@ watch(sort, async (newVal: any) => {
   await updateList()
   selectItem.value = null
 })
+
 </script>

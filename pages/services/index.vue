@@ -38,7 +38,7 @@
             />
           </template>
         </Column>
-        <Column field="name" class="w-[75%]">
+        <Column field="name" class="w-[30%]">
           <template #header>
             <app-header-column
               type="string"
@@ -49,7 +49,18 @@
             />
           </template>
         </Column>
-        <Column field="group_text" class="w-[75%]">
+        <Column field="domain" class="w-[12%]">
+          <template #header>
+            <app-header-column
+              type="string"
+              title="Домен"
+              field="id"
+              v-model:filter="filter.serv.domain"
+              v-model:sort="sort.serv.domain"
+            />
+          </template>
+        </Column>
+        <Column field="group_text" class="w-[15%]">
           <template #header>
             <app-header-column
               type="string"
@@ -117,6 +128,7 @@ const filter = reactive<Service>({
   serv: {
     id: null,
     name: null,
+    domain: null,
     created_date: null,
     categories_text: null,
   },
@@ -129,6 +141,7 @@ const sort = reactive<Service>({
   serv: {
     id: null,
     name: null,
+    domain: null,
     created_date: null,
   },
 }) // Данные сортировки

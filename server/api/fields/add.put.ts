@@ -5,6 +5,7 @@ import { QueryResult } from 'pg'
 
 export default defineEventHandler(async (event: H3Event) => {
   const params = await readBody(event) // Параметры запроса
+  console.log("🚀 -> defineEventHandler -> params:", params)
   const response: ResponseHTTP = {
     statusCode: 200,
     message: 'Запись добавлена успешно',
@@ -13,27 +14,35 @@ export default defineEventHandler(async (event: H3Event) => {
 
   if(!params) {
     response.statusCode = 500
-    response.message = 'Ошибка при получении параметров для создания новой категории'
+    response.message = 'Ошибка при получении параметров для создания нового поля'
     return response
   }
+  
+  
+  const obj = {
+    name: params.name,
+    label: params.label,
+    description: params.description,
+    type: params.type
+  }
 
-  const sql: string = `INSERT INTO base.categories(name) VALUES($1) RETURNING *`
+  const sql: string = `INSERT INTO service.fields("table", values) VALUES($1, $2) RETURNING *`
   try{
-    const result: QueryResult = await db.query(sql, Object.values(params))
+    const result: QueryResult = await db.query(sql, [params.table, obj])
 
     if(!result) {
       response.statusCode = 500
-      response.message = 'Непредвиденная ошибка при создании категории'
+      response.message = 'Непредвиденная ошибка при создании дополнительного поля'
       return response
     }
 
     response.statusCode = 200
-    response.message = 'Категория создана успешно'
+    response.message = 'Поле создано успешно'
     response.data = result.rows[0]  
   }
   catch(err: any){
     response.statusCode = 400
-    response.message = `Непредвиденная ошибка при создании категории: ${err.toString()}`
+    response.message = `Непредвиденная ошибка при создании поля: ${err.toString()}`
     return response
   }
   

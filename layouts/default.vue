@@ -83,6 +83,10 @@ const items = ref<Item[]>([
       { label: 'Периоды', url: '/periods' },
     ],
   },
+  {
+    label: 'Редактор',
+    url: '/editor',
+  },
 ]) // Список меню
 
 /**

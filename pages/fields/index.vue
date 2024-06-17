@@ -14,7 +14,7 @@
   <div class="pt-1 shadow-xl">
     <div>
       <DataTable
-        :value="storeFileds.list"
+        :value="storeFields.list"
         :scrollHeight="tableHeight"
         scrollable
         resizableColumns
@@ -27,7 +27,7 @@
         ref="table"
         :loading="isLoading"
       >
-        <Column field="id" class="w-[180px]">
+        <Column field="id" class="w-[100px]">
           <template #header>
             <app-header-column
               type="number"
@@ -38,18 +38,51 @@
             />
           </template>
         </Column>
-        <Column field="name" class="w-[75%]">
+        <Column field="table" class="w-[15%]">
           <template #header>
             <app-header-column
               type="string"
               title="Таблица"
-              field="id"
+              field="table"
               v-model:filter="filter.fld.table"
               v-model:sort="sort.fld.table"
             />
           </template>
         </Column>
-        <Column class="w-[350px]">
+        <Column field="label" class="w-[25%]">
+          <template #header>
+            <app-header-column
+              type="string"
+              title="Заголовок"
+              field="label"
+              v-model:filter="filter.fld.values.label"
+              v-model:sort="sort.fld.values.label"
+            />
+          </template>
+        </Column>
+        <Column field="name" class="w-[25%]">
+          <template #header>
+            <app-header-column
+              type="string"
+              title="Наименование"
+              field="name"
+              v-model:filter="filter.fld.values.name"
+              v-model:sort="sort.fld.values.name"
+            />
+          </template>
+        </Column>
+        <Column field="description" class="w-[35%]">
+          <template #header>
+            <app-header-column
+              type="string"
+              title="Описание"
+              field="description"
+              v-model:filter="filter.fld.values.description"
+              v-model:sort="sort.fld.values.description"
+            />
+          </template>
+        </Column>
+        <Column class="w-[150px]">
           <template #header>
             <app-header-column
               type="date"
@@ -66,12 +99,7 @@
       </DataTable>
     </div>
     <div ref="blockPagination">
-      <Paginator
-        :rows="storeFileds.limit"
-        :totalRecords="storeFileds.count"
-        ref="pagination"
-        @click="setPaginaion"
-      />
+      <Paginator :rows="storeFields.limit" :totalRecords="storeFields.count" ref="pagination" @click="setPaginaion" />
     </div>
   </div>
 </template>
@@ -81,9 +109,9 @@ import type { DynamicDialogOptions } from 'primevue/dynamicdialogoptions/Dynamic
 import type { PageState } from 'primevue/paginator/Paginator'
 import type { TitleBlock } from '~/types/Form'
 import moment from 'moment'
-import { useStoreFileds } from '~/stores/fields.store'
+import { useStoreFields } from '~/stores/fields.store'
 import { useConfirm } from 'primevue/useconfirm'
-import { FieldsField, Field  } from '~/types/Field'
+import { FieldsField, Field } from '~/types/Field'
 
 const confirm = useConfirm()
 
@@ -96,7 +124,12 @@ const filter = reactive<Field>({
     id: null,
     table: null,
     created_date: null,
-    values: null,
+    values: {
+      name: null,
+      label: null,
+      description: null,
+      type: null,
+    },
   },
 }) // Значение фильтров
 
@@ -105,11 +138,15 @@ const sort = reactive<Field>({
     id: null,
     table: null,
     created_date: null,
-    values: null,
+    values: {
+      name: null,
+      label: null,
+      description: null,
+    },
   },
 }) // Данные сортировки
 
-const storeFileds = useStoreFileds() // Создание стора
+const storeFields = useStoreFields() // Создание стора
 const editModal = defineAsyncComponent(() => import('./edit.vue'))
 const dialog: DynamicDialogOptions = useDialog() // Модуль диалогов
 const table: any = ref() // Ссылка на таблицу
@@ -120,7 +157,7 @@ const titleBlock: Ref<TitleBlock | null> = ref(null) // Элемент заго�
 const blockPagination = ref() // Родительский элемент пагинации
 
 const valuePagination: ComputedRef<any> = computed(() => pagination.value?.page || 0) // Получение значения пагинации
-const isLoading: ComputedRef<boolean> = computed(() => storeFileds.isLoading) // Вычисление значения загрузки данных
+const isLoading: ComputedRef<boolean> = computed(() => storeFields.isLoading) // Вычисление значения загрузки данных
 
 /**
  ** Вычисление активности кнопки "Изменить" и "Удалить"
@@ -136,7 +173,7 @@ const disabled: ComputedRef<boolean> = computed(() => !selectItem.value)
  */
 const updateList: () => Promise<void> = async () => {
   await nextTick() // Ожидание загрузки DOM
-  await storeFileds.getList() // Получение списка
+  await storeFields.getList() // Получение списка
 }
 
 /**
@@ -193,7 +230,7 @@ const onCreate = async (): Promise<void> => {
     },
     onClose: async (args: any): Promise<void> => {
       await updateList()
-      selectItem.value = storeFileds.list[0] // Выделение созданного элемента(находится первый в списке)
+      selectItem.value = storeFields.list[0] // Выделение созданного элемента(находится первый в списке)
     },
     data: {
       type: 'create', // Тип модального окна
@@ -249,8 +286,8 @@ const onDelete = async (): Promise<void> => {
       acceptClass: 'p-button-danger',
       accept: async () => {
         if (selectItem.value) {
-          storeFileds.record = selectItem.value
-          const resDel: boolean = await storeFileds.del()
+          storeFields.record = selectItem.value
+          const resDel: boolean = await storeFields.del()
           if (resDel) {
             await updateList()
           }
@@ -265,18 +302,18 @@ const onDelete = async (): Promise<void> => {
  * @function setPaginaion
  */
 const setPaginaion = async () => {
-  storeFileds.offset = valuePagination.value * storeFileds.limit
+  storeFields.offset = valuePagination.value * storeFields.limit
   await updateList()
 }
 
 watch(filter, async (newVal) => {
-  storeFileds.filter = newVal // Установка фильтра
+  storeFields.filter = newVal // Установка фильтра
   await updateList()
   selectItem.value = null
 })
 
 watch(sort, async (newVal: any) => {
-  storeFileds.sort = newVal // Установка сортировки
+  storeFields.sort = newVal // Установка сортировки
   await updateList()
   selectItem.value = null
 })

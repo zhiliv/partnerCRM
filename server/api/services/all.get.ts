@@ -20,6 +20,7 @@ export default defineEventHandler(async (event: H3Event) => {
       serv.name as name,
       serv.created_date as created_date,
       serv.updated_date,
+      serv.domain as domain,
       array_agg(CASE
         WHEN l.category_id IS NOT NULL
             THEN json_build_object('id', l.category_id, 'name', c.name)
@@ -38,7 +39,7 @@ export default defineEventHandler(async (event: H3Event) => {
       LEFT join base.categories c ON l.category_id = c.id
       LEFT join base.groups g ON g.id = serv.id_group
       ${getFilter(JSON.parse(params.filter))}
-      GROUP BY serv.id, serv.name, serv.created_date , serv.updated_date,  g.id, g.name
+      GROUP BY serv.id, serv.name, serv.created_date , serv.updated_date,  g.id, g.name, serv.domain
       ${Object.keys(JSON.parse(params.sort)).length > 0 ? getSort(params.sort) : ' ORDER BY id DESC '}
       ${getLimit(params.limit, params.offset)}
   

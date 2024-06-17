@@ -25,6 +25,7 @@ export default defineEventHandler(async (event: H3Event) => {
       serv.name as name,
       serv.created_date as created_date,
       serv.updated_date,
+      serv.domain as domain,
       array_agg(
             json_build_object('id', l.category_id, 'name', c.name)
        ) as categories,
@@ -41,7 +42,7 @@ export default defineEventHandler(async (event: H3Event) => {
       LEFT join base.categories c ON l.category_id = c.id
       LEFT join base.groups g ON g.id = serv.id_group
     WHERE serv.id = $1 
-    GROUP BY serv.id, serv.name, serv.created_date , serv.updated_date,  g.id, g.name
+    GROUP BY serv.id, serv.name, serv.created_date , serv.updated_date,  g.id, g.name, serv.domain
     `
 
   try {

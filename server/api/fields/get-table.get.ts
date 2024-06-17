@@ -3,15 +3,25 @@ import type { FieldsCategory } from '~/types/Category'
 import type { QueryArrayResult } from 'pg'
 import type {ParamsQuery} from '~/types/ParamsQuery'
 import { db } from '~/server/db'
-import { getFilter } from '~/server/utils/helper'
 
+interface Params extends ParamsQuery {
+  table: string
+}
 
 export default defineEventHandler(async (event: H3Event) => {
-  const params: ParamsQuery = await getQuery(event) // Получение параметров запроса
+  const params: Params = await getQuery(event) // Получение параметров запроса
+  console.log("🚀 -> defineEventHandler -> params:", params)
+  
   const response = {
     statusCode: 200,
     message: 'Список дополнительных получен успешно',
     data: <any>[]
+  }
+  
+  if(!params || !params.table) {
+    response.statusCode = 400
+    response.message = 'Не передана таблица'
+    return response
   }
 
   const sql = `
@@ -27,13 +37,11 @@ export default defineEventHandler(async (event: H3Event) => {
       fld.values -> 'type' as type
     FROM 
       service.fields as fld
-      ${getFilter(JSON.parse(params.filter))}
-      ${Object.keys(JSON.parse(params.sort)).length > 0 ? getSort(params.sort) : ' ORDER BY id DESC '}
-    ${getLimit(params.limit, params.offset)}
+      WHERE fld.table = $1
     `
 
   try {
-    const result: QueryArrayResult = await db.query(sql) // Выполнение запроса  
+    const result: QueryArrayResult = await db.query(sql, [params.table]) // Выполнение запроса  
     if(!result) {
       response.statusCode = 400
       response.message = `Непредвиденная ошибка получения списка дополнительных полей`

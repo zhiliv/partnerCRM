@@ -1,5 +1,4 @@
 import type { TimeStamp } from './Time'
-import type { Sort } from './Filter'
 
 /** 
 ** Описание интерфейса для дополнительных полей
@@ -9,17 +8,18 @@ import type { Sort } from './Filter'
 * @member {String} created_date - Дата создания в формате timezone
 * @member {String} update_date - Дата обновления записи в формате timezone
 * @member {String} table - Таблица
-* @member {Object} values - 
+* @member {Object} values - Значение полей
 */
 export interface FieldsField {
   id?: number | null
   created_date?: TimeStamp | null
   update_dated?: TimeStamp | null
   table?: string | null
-  values?: {
-    name: string | null
-    label: string | null
-    description: string | null
+  values: {
+    name?: string | null 
+    label?: string | null
+    description?: string | null
+    type?: string
   }
 }
 
@@ -41,4 +41,18 @@ export interface ParamsGetFields {
   order?: string
   filter: Field
   sort: Field
+}
+
+/* 
+** Описание интерфейса для дополнительных полей для редактирования \ создания
+* @interface EditField
+*/
+export interface EditField {
+  id?: number | null
+  name?: string | null 
+  label?: string | null
+  description?: string | null
+  table?: string | null
+  type?: string | null
+  
 }
